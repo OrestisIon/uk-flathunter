@@ -2,7 +2,7 @@ import json
 import unittest
 import requests_mock
 
-from test.utils.config import StringConfig
+from flathunter.testing.config import StringConfig
 from flathunter.notifiers import SenderApprise
 
 

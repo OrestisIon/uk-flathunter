@@ -1,7 +1,7 @@
 import pytest
 
 from flathunter.crawler.kleinanzeigen import Kleinanzeigen
-from test.utils.config import StringConfig
+from flathunter.testing.config import StringConfig
 
 DUMMY_CONFIG = """
 urls:

@@ -15,10 +15,10 @@ from flathunter.config import Config
 from flathunter.heartbeat import Heartbeat
 from flathunter.time_utils import get_random_time_jitter, wait_during_period
 
-__author__ = "Jan Harrie"
+__author__ = "Orestis Iona"
 __version__ = "1.0"
-__maintainer__ = "Nody"
-__email__ = "harrymcfly@protonmail.com"
+__maintainer__ = "orestis"
+__email__ = "orestis@gmail.com"
 __status__ = "Production"
 
 

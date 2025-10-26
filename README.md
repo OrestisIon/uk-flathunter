@@ -82,7 +82,7 @@ file shipped with the project (`config.yaml.dist`), but you can also use the con
 a configuration for simple projects:
 
 ```sh
-$ python config_wizard.py
+$ python scripts/config_wizard.py
 ```
 
 The wizard will create a new `config.yaml` file in the current working directory that you can use to run Flathunter:
@@ -139,7 +139,7 @@ and `telegram` sections will allow you to run Flathunter. Alternatively, you can
 to generate a basic configuration:
 
 ```sh
-$ python config_wizard.py
+$ python scripts/config_wizard.py
 ```
 
 #### URLs

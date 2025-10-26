@@ -4,7 +4,7 @@ from typing import Dict
 from functools import reduce
 from bs4 import BeautifulSoup
 from flathunter.crawler.wggesucht import WgGesucht
-from test.utils.config import StringConfig
+from flathunter.testing.config import StringConfig
 
 class WgGesuchtCrawlerTest(unittest.TestCase):
 
@@ -32,7 +32,9 @@ class WgGesuchtCrawlerTest(unittest.TestCase):
         self.assertTrue(found, "Expected 'to' to sometimes be set")
 
     def test_filter_spotahome_ads(self):
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "fixtures", "wg-gesucht-spotahome.html")) as fixture:
+        # Fixture is in flathunter/testing/fixtures/
+        fixture_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "testing", "fixtures", "wg-gesucht-spotahome.html")
+        with open(fixture_path) as fixture:
             soup = BeautifulSoup(fixture, 'lxml')
         entries = self.crawler.extract_data(soup)
         assert len(entries) == 20

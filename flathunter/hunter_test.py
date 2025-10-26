@@ -4,9 +4,9 @@ from typing import Optional, Dict, List
 from flathunter.crawler.immowelt import Immowelt
 from flathunter.hunter import Hunter 
 from flathunter.idmaintainer import IdMaintainer
-from test.dummy_crawler import DummyCrawler
-from test.test_util import count
-from test.utils.config import StringConfig
+from flathunter.testing.dummy_crawler import DummyCrawler
+from flathunter.testing.util import count
+from flathunter.testing.config import StringConfig
 
 def find_number_in_expose(expose: Dict, field: str) -> Optional[float]:
   search_text = expose.get(field, "")

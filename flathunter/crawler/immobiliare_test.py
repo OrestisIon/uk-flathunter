@@ -1,6 +1,6 @@
 import unittest
 from flathunter.crawler.immobiliare import Immobiliare
-from test.utils.config import StringConfig
+from flathunter.testing.config import StringConfig
 
 
 class ImmobiliareCrawlerTest(unittest.TestCase):

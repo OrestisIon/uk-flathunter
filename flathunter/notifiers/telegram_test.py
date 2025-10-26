@@ -3,8 +3,8 @@ import unittest
 import datetime
 
 from requests_mock import Mocker
-from test.utils.request_matcher import RequestCounter
-from test.utils.config import StringConfig
+from flathunter.testing.request_matcher import RequestCounter
+from flathunter.testing.config import StringConfig
 
 from flathunter.notifiers import SenderTelegram
 

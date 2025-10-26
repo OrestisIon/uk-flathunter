@@ -4,7 +4,7 @@ import pytest
 from functools import reduce
 
 from flathunter.crawler.vrmimmo import VrmImmo
-from test.utils.config import StringConfig
+from flathunter.testing.config import StringConfig
 
 class VrmImmoCrawlerTest(unittest.TestCase):
     TEST_URL = 'https://vrm-immo.de/suchergebnisse?l=Darmstadt&r=0km&_multiselect_r=0km&a=de.darmstadt&t=apartment%3Asale%3Aliving&pf=&pt=&rf=0&rt=0&sf=&st=&s=most_recently_updated_first'

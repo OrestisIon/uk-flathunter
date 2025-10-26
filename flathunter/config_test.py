@@ -3,7 +3,7 @@ import tempfile
 import os.path
 import os
 from flathunter.config import Config
-from test.utils.config import StringConfig
+from flathunter.testing.config import StringConfig
 
 class ConfigTest(unittest.TestCase):
 

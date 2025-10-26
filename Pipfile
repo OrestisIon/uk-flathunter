@@ -38,6 +38,7 @@ certifi = "*"
 jinja2 = "*"
 cryptography = "*"
 pydantic = "*"
+exceptiongroup = "*"
 
 [dev-packages]
 exceptiongroup = "*"
