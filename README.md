@@ -1,4 +1,4 @@
-# Flathunter
+# UK Flathunter
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat)](https://github.com/RichardLitt/standard-readme)
 [![Lint Code Base](https://github.com/flathunters/flathunter/actions/workflows/linter.yml/badge.svg)](https://github.com/flathunters/flathunter/actions/workflows/linter.yml)
@@ -24,26 +24,35 @@ Flathunter is a Python application which periodically [scrapes](https://en.wikip
 Currently available messaging services are [Telegram](https://telegram.org/), [Mattermost](https://mattermost.com/), [Apprise](https://github.com/caronc/apprise) and [Slack](https://slack.com/).
 
 ## Table of Contents
-- [Background](#background)
-- [Install](#install)
+- [UK Flathunter](#uk-flathunter)
+  - [Flathunter will not solve your problem](#flathunter-will-not-solve-your-problem)
+  - [If you are not a Python developer / power-user](#if-you-are-not-a-python-developer--power-user)
+  - [Description](#description)
+  - [Table of Contents](#table-of-contents)
+  - [Background](#background)
   - [Prerequisites](#prerequisites)
-  - [Installation on Linux](#installation-on-linux)
-- [Usage](#usage)
-  - [Configuration](#configuration)
-    - [URLs](#urls)
-    - [Telegram](#telegram)
-    - [Capmonster](#capmonster)
-    - [Proxy](#proxy)
-    - [Google API](#google-api)
-  - [Command-line Interface](#command-line-interface)
-  - [Web Interface](#web-interface)
-  - [Docker](#docker)
-  - [Google Cloud Deployment](#google-cloud-deployment)
-- [Testing](#testing)
-- [Maintainers](#maintainers)
-- [Credits](#credits)
-  - [Contributers](#contributers)
-- [Contributing](#contributing)
+  - [Install](#install)
+    - [Installation on Linux](#installation-on-linux)
+  - [Usage](#usage)
+    - [Configuration](#configuration)
+      - [URLs](#urls)
+      - [Telegram](#telegram)
+      - [Bot Detection](#bot-detection)
+      - [Captchas](#captchas)
+      - [Capmonster](#capmonster)
+      - [ImmoScout24 Cookie Override](#immoscout24-cookie-override)
+      - [Proxy](#proxy)
+      - [Google API](#google-api)
+    - [Command-line Interface](#command-line-interface)
+    - [Web Interface](#web-interface)
+    - [Docker](#docker)
+      - [With Docker Compose](#with-docker-compose)
+      - [With plain Docker](#with-plain-docker)
+      - [Environment Configuration](#environment-configuration)
+    - [Google Cloud Deployment](#google-cloud-deployment)
+      - [Google App Engine Deployment](#google-app-engine-deployment)
+      - [Google Cloud Run Deployment](#google-cloud-run-deployment)
+  - [Testing](#testing)
 
 ## Background
 
@@ -379,29 +388,3 @@ $ pip install -e .
 ```
 
 to make the current project visible to your pip environment.
-
-## Maintainers
-
-This project is maintained by the members of the [Flat Hunters](https://github.com/flathunters) Github organisation, which is a collection of individual unpaid volunteers who have all had their own processes with flat-hunting in Germany. If you want to join, just ping one of us a message!
-
-## Credits
-
-The original code was contributed by [@NodyHub](https://github.com/NodyHub), whose original idea this project was.
-
-Many thanks to the devs of [Fredy](https://github.com/orangecoding/fredy) for reverse engineering the ImmoScout24 mobile API and sharing their insights.
-
-### Contributers
-
-Other contributions were made along the way by:
-
-- Bene
-- [@tschuehly](https://github.com/tschuehly)
-- [@Cugu](https://github.com/Cugu)
-- [@GerRudi](https://github.com/GerRudi)
-- [@xMordax](https://github.com/xMordax)
-- [@codders](https://github.com/codders)
-- [@alexanderroidl](https://github.com/alexanderroidl)
-
-## Contributing
-
-If you want to make a contribution, please check out the contributor code of conduct ([EN 🇬🇧](CODE_OF_CONDUCT.en.md)/[DE 🇩🇪](CODE_OF_CONDUCT.de.md)) first. Pull requests are very welcome, as are [issues](https://github.com/flathunters/flathunter/issues). If you file an issue, please include as much information as possible about how to reproduce the issue.
