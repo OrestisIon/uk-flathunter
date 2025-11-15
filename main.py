@@ -1,12 +1,12 @@
 """ Startup file for Google Cloud deployment or local webserver"""
 import os
 
-from flathunter.argument_parser import parse
-from flathunter.idmaintainer import IdMaintainer
-from flathunter.googlecloud_idmaintainer import GoogleCloudIdMaintainer
-from flathunter.web_hunter import WebHunter
-from flathunter.config import Config
-from flathunter.logging import configure_logging
+from flathunter.app.argument_parser import parse
+from flathunter.persistence.idmaintainer import IdMaintainer
+from flathunter.persistence.googlecloud_idmaintainer import GoogleCloudIdMaintainer
+from flathunter.app.web_hunter import WebHunter
+from flathunter.core.config import Config
+from flathunter.core.logging import configure_logging
 
 from flathunter.web import app
 

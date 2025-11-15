@@ -7,25 +7,19 @@
 
 A bot to help people with their rental real-estate search. 🏠🤖
 
-## Flathunter will not solve your problem
-
-The rents are too high - you can't find a flat at a reasonable price in a place you actually want to live. Too many people apply for the good flats - you need to get apply very quickly to have any chance of getting a place. A bot seems like a good solution to this, but it's really just making things worse.
-
-Use this bot to help with your flatsearch - it's a much better use of your time and resources than hitting refresh on a property portal every five minutes. Once you found a place for yourself, consider supporting alternatives like the [Mietshäusersyndikat](https://www.syndikat.org/en/the-joint-venture/). The MHS projects (like [the one I live in](https://teichwiesel.de/unterstuetzen/)) are always [looking for funding](https://www.syndikat.org/en/funding/) in the form of interest-bearing loans from individuals. If you have some thousand euros sitting around on your bank account, you can improve the housing situation in Germany and earn some interest on your savings by [lending cash](https://www.syndikat.org/en/direct-loans/) to one of the projects for a year or two.
 
 ## If you are not a Python developer / power-user
 
-Setting up this project on your local machine can be a bit complicated if you have no experience with Python. This `README` is detailed, and there is a configuration wizard, but it's not super user-friendly. If you are searching for properties in Berlin, you can use the hosted version at https://flathunter.codders.de . You can login there with your Telegram ID and setup a basic search without downloading the project.
+Setting up this project on your local machine can be a bit complicated if you have no experience with Python. This `README` is detailed, and there is a configuration wizard, but it's not super user-friendly.
 
 ## Description
 
 Flathunter is a Python application which periodically [scrapes](https://en.wikipedia.org/wiki/Web_scraping) property listings sites, configured by the user, to find new rental real-estate listings, reporting them over messaging services.
 
-Currently available messaging services are [Telegram](https://telegram.org/), [Mattermost](https://mattermost.com/), [Apprise](https://github.com/caronc/apprise) and [Slack](https://slack.com/).
+Currently available messaging services are [Telegram](https://telegram.org/) and [Slack](https://slack.com/).
 
 ## Table of Contents
 - [UK Flathunter](#uk-flathunter)
-  - [Flathunter will not solve your problem](#flathunter-will-not-solve-your-problem)
   - [If you are not a Python developer / power-user](#if-you-are-not-a-python-developer--power-user)
   - [Description](#description)
   - [Table of Contents](#table-of-contents)
@@ -184,7 +178,7 @@ Some sites (including ImmoScout24) implement a Captcha to avoid being crawled by
 #### Capmonster
 
 Currently, [Capmonster](https://capmonster.cloud/) is the only implemented captcha-solving service that solves the captchas on ImmoScout24. You will need to set
-the `FLATHUNTER_CAPMONSTER_KEY` environment variable or add the key to your `config.yaml` to solve the captchas.
+the `CAPMONSTER_KEY` environment variable or add the key to your `config.yaml` to solve the captchas.
 
 #### ImmoScout24 Cookie Override
 
@@ -280,32 +274,32 @@ $ docker run --mount type=bind,source=$PWD/config.yaml,target=/config.yaml flath
 
 To make deployment with docker easier, most of the important configuration options can be set with environment variables. The current list of recognised variables includes:
 
- - FLATHUNTER_TARGET_URLS - a semicolon-separated list of URLs to crawl
- - FLATHUNTER_DATABASE_LOCATION - the location on disk of the sqlite database if required
- - FLATHUNTER_GOOGLE_CLOUD_PROJECT_ID - the Google Cloud Project ID, for Google Cloud deployments
- - FLATHUNTER_VERBOSE_LOG - set to any value to enable verbose logging
- - FLATHUNTER_LOOP_PERIOD_SECONDS - a number in seconds for the crawling interval
- - FLATHUNTER_RANDOM_JITTER_ENABLED - whether a random delay should be added to the crawling interval, truthy/falsy value expected
- - FLATHUNTER_MESSAGE_FORMAT - a format string for the notification messages, where `#CR#` will be replaced by newline
- - FLATHUNTER_NOTIFIERS - a comma-separated list of notifiers to enable (e.g. `telegram,mattermost,slack`)
- - FLATHUNTER_TELEGRAM_BOT_TOKEN - the token for the Telegram notifier
- - FLATHUNTER_TELEGRAM_RECEIVER_IDS - a comma-separated list of receiver IDs for Telegram notifications
- - FLATHUNTER_MATTERMOST_WEBHOOK_URL - the webhook URL for Mattermost notifications
- - FLATHUNTER_SLACK_WEBHOOK_URL - the webhook URL for Slack notifications
- - FLATHUNTER_WEBSITE_SESSION_KEY - the secret session key used to secure sessions for the flathunter website deployment
- - FLATHUNTER_WEBSITE_DOMAIN - the public domain of the flathunter website deployment
- - FLATHUNTER_2CAPTCHA_KEY - the API key for 2captcha
- - FLATHUNTER_IMAGETYPERZ_TOKEN - the API token for ImageTyperz
- - FLATHUNTER_IS24_COOKIE - set to the value of the reese84 immoscout cookie to help with bot detection
- - FLATHUNTER_HEADLESS_BROWSER - set to any value to configure Google Chrome to be launched in headless mode (necessary for Docker installations)
- - FLATHUNTER_FILTER_EXCLUDED_TITLES - a semicolon-separated list of words to filter out from matches
- - FLATHUNTER_FILTER_MIN_PRICE - the minimum price (integer euros)
- - FLATHUNTER_FILTER_MAX_PRICE - the maximum price (integer euros)
- - FLATHUNTER_FILTER_MIN_SIZE - the minimum size (integer square meters)
- - FLATHUNTER_FILTER_MAX_SIZE - the maximum size (integer square meters)
- - FLATHUNTER_FILTER_MIN_ROOMS - the minimum number of rooms (integer)
- - FLATHUNTER_FILTER_MAX_ROOMS - the maximum number of rooms (integer)
- - FLATHUNTER_FILTER_MAX_PRICE_PER_SQUARE - the maximum price per square meter (integer euros)
+ - TARGET_URLS - a semicolon-separated list of URLs to crawl
+ - DATABASE_LOCATION - the location on disk of the sqlite database if required
+ - GOOGLE_CLOUD_PROJECT_ID - the Google Cloud Project ID, for Google Cloud deployments
+ - VERBOSE_LOG - set to any value to enable verbose logging
+ - LOOP_PERIOD_SECONDS - a number in seconds for the crawling interval
+ - RANDOM_JITTER_ENABLED - whether a random delay should be added to the crawling interval, truthy/falsy value expected
+ - MESSAGE_FORMAT - a format string for the notification messages, where `#CR#` will be replaced by newline
+ - NOTIFIERS - a comma-separated list of notifiers to enable (e.g. `telegram,mattermost,slack`)
+ - TELEGRAM_BOT_TOKEN - the token for the Telegram notifier
+ - TELEGRAM_RECEIVER_IDS - a comma-separated list of receiver IDs for Telegram notifications
+ - MATTERMOST_WEBHOOK_URL - the webhook URL for Mattermost notifications
+ - SLACK_WEBHOOK_URL - the webhook URL for Slack notifications
+ - WEBSITE_SESSION_KEY - the secret session key used to secure sessions for the flathunter website deployment
+ - WEBSITE_DOMAIN - the public domain of the flathunter website deployment
+ - 2CAPTCHA_KEY - the API key for 2captcha
+ - IMAGETYPERZ_TOKEN - the API token for ImageTyperz
+ - IS24_COOKIE - set to the value of the reese84 immoscout cookie to help with bot detection
+ - HEADLESS_BROWSER - set to any value to configure Google Chrome to be launched in headless mode (necessary for Docker installations)
+ - FILTER_EXCLUDED_TITLES - a semicolon-separated list of words to filter out from matches
+ - FILTER_MIN_PRICE - the minimum price (integer euros)
+ - FILTER_MAX_PRICE - the maximum price (integer euros)
+ - FILTER_MIN_SIZE - the minimum size (integer square meters)
+ - FILTER_MAX_SIZE - the maximum size (integer square meters)
+ - FILTER_MIN_ROOMS - the minimum number of rooms (integer)
+ - FILTER_MAX_ROOMS - the maximum number of rooms (integer)
+ - FILTER_MAX_PRICE_PER_SQUARE - the maximum price per square meter (integer euros)
 
 ### Google Cloud Deployment
 
@@ -321,7 +315,7 @@ to setup the SDK. You will need to create a new cloud project (or connect to an 
 $ gcloud config set project flathunters
 ```
 
-You will need to provide the project ID to the configuration file `config.yaml` as value to the key `google_cloud_project_id` or in the `FLATHUNTER_GOOGLE_CLOUD_PROJECT_ID` environment variable.
+You will need to provide the project ID to the configuration file `config.yaml` as value to the key `google_cloud_project_id` or in the `GOOGLE_CLOUD_PROJECT_ID` environment variable.
 
 Google Cloud [doesn't currently support Pipfiles](https://stackoverflow.com/questions/58546089/does-google-app-engine-flex-support-pipfile). To work around this restriction, the `Pipfile` and `Pipfile.lock` have been added to `.gcloudignore`, and a `requirements.txt` file has been generated using `pip freeze`. 
 

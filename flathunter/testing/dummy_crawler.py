@@ -4,8 +4,8 @@ from random import random
 from random import randint
 from random import choice
 
-from flathunter.logging import logger
-from flathunter.abstract_crawler import Crawler
+from flathunter.core.logging import logger
+from flathunter.core.abstract_crawler import Crawler
 
 class DummyCrawler(Crawler):
     URL_PATTERN = re.compile(r'https://www\.example\.com')

@@ -38,8 +38,8 @@ jobs:
       - name: Run tests
         run: coverage run
         env:
-          FLATHUNTER_HEADLESS_BROWSER: true
-          FLATHUNTER_CAPMONSTER_KEY: ${{ secrets.CAPMONSTER_API_KEY }}
+          HEADLESS_BROWSER: true
+          CAPMONSTER_KEY: ${{ secrets.CAPMONSTER_API_KEY }}
           WDM_LOCAL: 1
           CHROMIUM_BIN: /opt/hostedtoolcache/chromium/stable/x64/chrome
       - name: Run codecov

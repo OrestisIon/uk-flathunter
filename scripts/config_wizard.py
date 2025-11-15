@@ -14,8 +14,8 @@ from prompt_toolkit import prompt
 from prompt_toolkit.document import Document
 from prompt_toolkit.validation import Validator, ValidationError
 
-from flathunter.config import YamlConfig
-from flathunter.crawler import immobilienscout
+from flathunter.core.config import YamlConfig
+from flathunter.crawler.germany import immobilienscout
 
 
 class ConfigurationAborted(Exception):

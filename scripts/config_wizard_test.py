@@ -5,7 +5,7 @@ from unittest.mock import patch
 from prompt_toolkit.document import Document
 from prompt_toolkit.validation import ValidationError
 
-from flathunter.config import YamlConfig
+from flathunter.core.config import YamlConfig
 import config_wizard
 from config_wizard import ConfigurationAborted, UrlsValidator, Notifier
 

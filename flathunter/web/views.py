@@ -9,8 +9,8 @@ from flask_api import status # type: ignore
 
 from flathunter.web import app, log
 from flathunter.web.util import sanitize_float
-from flathunter.filter import FilterBuilder
-from flathunter.config import YamlConfig
+from flathunter.processing.filter import FilterBuilder
+from flathunter.core.config import YamlConfig
 
 class AuthenticationError(Exception):
     """Wrapper for authentication exceptions"""

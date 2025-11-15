@@ -4,10 +4,10 @@ from typing import Dict
 
 import requests
 
-from flathunter.abstract_notifier import Notifier
-from flathunter.abstract_processor import Processor
-from flathunter.config import YamlConfig
-from flathunter.logging import logger
+from flathunter.core.abstract_notifier import Notifier
+from flathunter.core.abstract_processor import Processor
+from flathunter.core.config import YamlConfig
+from flathunter.core.logging import logger
 
 
 class SenderSlack(Processor, Notifier):

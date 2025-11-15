@@ -1,9 +1,9 @@
 """Functions and classes related to sending Apprise messages"""
 import apprise
 
-from flathunter.abstract_notifier import Notifier
-from flathunter.abstract_processor import Processor
-from flathunter.config import YamlConfig
+from flathunter.core.abstract_notifier import Notifier
+from flathunter.core.abstract_processor import Processor
+from flathunter.core.config import YamlConfig
 
 
 class SenderApprise(Processor, Notifier):

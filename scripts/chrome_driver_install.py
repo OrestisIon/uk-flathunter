@@ -4,7 +4,7 @@ import os
 
 from webdriver_manager.chrome import ChromeDriverManager
 
-from flathunter.logging import wdm_logger
+from flathunter.core.logging import wdm_logger
 
 # Cache the driver manager to local folder so that gunicorn can find it
 os.environ['WDM_LOCAL'] = '1'

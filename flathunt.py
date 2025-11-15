@@ -7,13 +7,13 @@
 import time
 from datetime import time as dtime
 
-from flathunter.argument_parser import parse
-from flathunter.logging import logger, configure_logging
-from flathunter.idmaintainer import IdMaintainer
-from flathunter.hunter import Hunter
-from flathunter.config import Config
-from flathunter.heartbeat import Heartbeat
-from flathunter.time_utils import get_random_time_jitter, wait_during_period
+from flathunter.app.argument_parser import parse
+from flathunter.core.logging import logger, configure_logging
+from flathunter.persistence.idmaintainer import IdMaintainer
+from flathunter.app.hunter import Hunter
+from flathunter.core.config import Config
+from flathunter.utils.heartbeat import Heartbeat
+from flathunter.utils.time_utils import get_random_time_jitter, wait_during_period
 
 __author__ = "Orestis Iona"
 __version__ = "1.0"

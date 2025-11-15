@@ -1,7 +1,7 @@
 """Wrap configuration options as an object"""
 import yaml
 
-from flathunter.config import YamlConfig, CaptchaEnvironmentConfig
+from flathunter.core.config import YamlConfig, CaptchaEnvironmentConfig
 
 class StringConfig(YamlConfig):
     """Class to represent flathunter configuration for tests"""
