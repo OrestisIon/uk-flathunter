@@ -143,3 +143,71 @@ class IdMaintainer:
         cur.execute('INSERT INTO executions VALUES(?);', (result,))
         self.get_connection().commit()
         return result
+
+
+# Backward compatibility adapter for repository pattern
+try:
+    from flathunter.repositories.expose_repository import SqliteExposeRepository
+
+    class IdMaintainerRepositoryAdapter(SqliteExposeRepository):
+        """Adapter to maintain IdMaintainer interface while using repository pattern
+
+        This adapter allows gradual migration from IdMaintainer to repository pattern.
+        New code should use SqliteExposeRepository directly.
+        """
+
+        def __init__(self, db_name):
+            super().__init__(db_name)
+
+        # Delegate IdMaintainer methods to repository
+        def get_connection(self):
+            """Get database connection (IdMaintainer compatibility)"""
+            return self._get_connection()
+
+        def get_exposes_since(self, min_datetime):
+            """Loads all exposes since the specified date (IdMaintainer compatibility)"""
+            def row_to_expose(row):
+                obj = json.loads(row[2])
+                obj['created_at'] = row[0]
+                return obj
+            cur = self._get_connection().cursor()
+            cur.execute('SELECT created, crawler, details FROM exposes \
+                         WHERE created >= ? ORDER BY created DESC', (min_datetime,))
+            return list(map(row_to_expose, cur.fetchall()))
+
+        def save_settings_for_user(self, user_id, settings):
+            """Saves the user settings to the database (IdMaintainer compatibility)"""
+            cur = self._get_connection().cursor()
+            cur.execute('INSERT OR REPLACE INTO users VALUES (?, ?)', (user_id, json.dumps(settings)))
+            self._get_connection().commit()
+
+        def get_settings_for_user(self, user_id):
+            """Loads the settings for a user from the database (IdMaintainer compatibility)"""
+            cur = self._get_connection().cursor()
+            cur.execute('SELECT settings FROM users WHERE id = ?', (user_id,))
+            row = cur.fetchone()
+            if row is None:
+                return None
+            return json.loads(row[0])
+
+        def get_user_settings(self):
+            """Loads all users' settings from the database (IdMaintainer compatibility)"""
+            cur = self._get_connection().cursor()
+            cur.execute('SELECT id, settings FROM users')
+            res = []
+            for row in cur.fetchall():
+                res.append((row[0], json.loads(row[1])))
+            return res
+
+        def get_last_run_time(self):
+            """Returns the time of the last hunt (IdMaintainer compatibility)"""
+            return self.get_last_execution_time()
+
+        def update_last_run_time(self):
+            """Saves the time of the most recent hunt to the database (IdMaintainer compatibility)"""
+            self.record_execution()
+            return datetime.datetime.now()
+
+except ImportError:
+    # Repository not available, skip adapter
+    pass

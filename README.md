@@ -47,6 +47,7 @@ Currently available messaging services are [Telegram](https://telegram.org/) and
       - [Google App Engine Deployment](#google-app-engine-deployment)
       - [Google Cloud Run Deployment](#google-cloud-run-deployment)
   - [Testing](#testing)
+  - [Architecture](#architecture)
 
 ## Background
 
@@ -81,7 +82,7 @@ $ pipenv shell
 to launch a Python environment with the dependencies that your project requires. **Now that you are inside the virtual environment, all commands you run in the shell will run with the required dependencies available**
 
 Before you run the program for the first time, you need to generate a configuration file. There is an example
-file shipped with the project (`config.yaml.dist`), but you can also use the configuration wizard to generate
+file shipped with the project ([`docs/examples/config.yaml.dist`](docs/examples/config.yaml.dist)), but you can also use the configuration wizard to generate
 a configuration for simple projects:
 
 ```sh
@@ -121,7 +122,7 @@ $ sudo -u flathunter /home/flathunter/.local/bin/pipenv install
 ```
 Next configure the config file and service file to your liking. Then move the service file in place:
 ```sh
-$ mv flathunter/sample-flathunter.service /lib/systemd/system/flathunter.service
+$ sudo cp deployment/sample-flathunter.service /lib/systemd/system/flathunter.service
 ```
 At last you just have to start flathunter
 ```sh
@@ -137,7 +138,7 @@ $ chcon -R -t bin_t /home/flathunter/.local/bin/pipenv
 ### Configuration
 
 Before running the project for the first time, you need to create a valid configuration file. You can
-look at `config.yaml.dist` to see an example config - copying that to `config.yaml` and editing the `urls`
+look at [`docs/examples/config.yaml.dist`](docs/examples/config.yaml.dist) to see an example config - copying that to `config.yaml` and editing the `urls`
 and `telegram` sections will allow you to run Flathunter. Alternatively, you can use the configuration wizard
 to generate a basic configuration:
 
@@ -243,17 +244,17 @@ You can either use just Docker or Docker Compose to run the app containerized. W
 
 #### With Docker Compose
 
-1. Configure your `config.yaml` file (see [Configuration](#configuration)) or adjust the environment variables in the `docker-compose.yaml` file (see [Environment Configuration](#environment-configuration)). You can also combine both options, but in this case the environment variables have priority.
+1. Configure your `config.yaml` file (see [Configuration](#configuration)) or adjust the environment variables in the [`deployment/docker-compose.yaml`](deployment/docker-compose.yaml) file (see [Environment Configuration](#environment-configuration)). You can also combine both options, but in this case the environment variables have priority.
 2. To build the image, run inside the project's root directory:
 
 ```sh
-docker compose build
+docker compose -f deployment/docker-compose.yaml build
 ```
 
 3. To run the docker container, run inside the project's root directory:
 
 ```sh
-docker compose up
+docker compose -f deployment/docker-compose.yaml up
 ```
 
 #### With plain Docker
@@ -261,7 +262,7 @@ docker compose up
 First build the image inside the project's root directory:
 
 ```sh
-$ docker build -t flathunter .
+$ docker build -t flathunter -f deployment/Dockerfile .
 ```
 
 **When running a container using the image, a config file needs to be mounted on the container at `/config.yaml` or configuration has to be supplied using environment variables.** The example below provides the file `config.yaml` off the current working directory:
@@ -326,7 +327,7 @@ If the Pipfile has been updated, you will need to remove the line `pkg-resources
 To deploy the app to Google App Engine, run:
 
 ```
-$ gcloud app deploy
+$ gcloud app deploy deployment/app.yaml
 ```
 
 Your project will need to have the [Cloud Build API](https://console.developers.google.com/apis/api/cloudbuild.googleapis.com/overview) enabled, which requires it to be linked to a billing-enabled account. It also needs [Cloud Firestore API](https://console.cloud.google.com/apis/library/firestore.googleapis.com) to be enabled for the project. Firestore needs to be configured in [Native mode](https://cloud.google.com/datastore/docs/upgrade-to-firestore).
@@ -334,20 +335,20 @@ Your project will need to have the [Cloud Build API](https://console.developers.
 Instead of running with a timer, the web interface depends on periodic calls to the `/hunt` URL to trigger searches (this avoids the need to have a long-running process in the on-demand compute environment). You can configure Google Cloud to automatically hit the URL by deploying the cron job:
 
 ```
-$ gcloud app deploy cron.yaml
+$ gcloud app deploy deployment/cron.yaml
 ```
 
 #### Google Cloud Run Deployment
 
-If you need captcha support (for example to scrape Immoscout), you will need to deploy using [Google Cloud Run](https://cloud.google.com/run/), so that you can embed the Chrome browser and Selenium Webdriver in the docker image. A seperate `Dockerfile.gcloud.job` exists for this purpose.
+If you need captcha support (for example to scrape Immoscout), you will need to deploy using [Google Cloud Run](https://cloud.google.com/run/), so that you can embed the Chrome browser and Selenium Webdriver in the docker image. A seperate [`deployment/Dockerfile.gcloud.job`](deployment/Dockerfile.gcloud.job) exists for this purpose.
 
 First, ensure that `requirements.txt` has been created (per [Google Cloud Deployment](#google-cloud-deployment)), then either run:
 
 ```
-docker build -t flathunter-job -f Dockerfile.gcloud.job .
+docker build -t flathunter-job -f deployment/Dockerfile.gcloud.job .
 ```
 
-to build the docker image locally, or edit the `cloudbuild.yaml` file to point to the container registry for your own Google Cloud Project, and run:
+to build the docker image locally, or edit the [`deployment/cloudbuild.yaml`](deployment/cloudbuild.yaml) file to point to the container registry for your own Google Cloud Project, and run:
 
 ```
 gcloud builds submit --region=europe-west1
@@ -382,3 +383,419 @@ $ pip install -e .
 ```
 
 to make the current project visible to your pip environment.
+
+## Architecture
+
+Flathunter follows a modular, plugin-based architecture that separates concerns and enables extensibility. The codebase has been refactored to use modern Python design patterns including **Factory Pattern**, **Repository Pattern**, and **Protocol-based Interfaces**.
+
+### Core Design Principles
+
+1. **Separation of Concerns**: Business logic, persistence, and external integrations are clearly separated
+2. **Plugin Architecture**: Crawlers and notifiers can be registered dynamically without modifying core code
+3. **Type Safety**: Domain models use dataclasses with type hints for better IDE support and error catching
+4. **Dependency Inversion**: Components depend on abstract interfaces (Protocols) rather than concrete implementations
+5. **Backward Compatibility**: All refactoring maintains compatibility with existing configurations and deployments
+
+### Directory Structure
+
+```
+flathunter/
+├── app/                    # Application entry points
+├── config/                 # NEW: Configuration management
+│   ├── settings.py         # Typed configuration dataclass
+│   ├── crawler_factory.py  # Factory for crawler registration
+│   └── notifier_factory.py # Factory for notifier registration
+├── core/                   # Core abstractions and utilities
+│   ├── abstract_crawler.py
+│   ├── abstract_notifier.py
+│   ├── abstract_processor.py
+│   └── config.py           # Legacy config (uses factories)
+├── crawler/                # Website-specific crawlers
+│   ├── germany/            # German sites (ImmoScout24, WG-Gesucht, etc.)
+│   ├── uk/                 # UK sites (Zoopla, Rightmove)
+│   ├── italy/              # Italian sites (Immobiliare, Subito)
+│   └── spain/              # Spanish sites (Idealista)
+├── domain/                 # NEW: Domain models
+│   └── models.py           # Expose dataclass with type safety
+├── notifiers/              # Notification service integrations
+│   ├── telegram.py
+│   ├── slack.py
+│   ├── mattermost.py
+│   └── file.py
+├── persistence/            # Database and storage
+│   └── idmaintainer.py     # SQLite database management
+├── ports/                  # NEW: Interface definitions (Protocols)
+│   ├── crawler.py          # CrawlerPort protocol
+│   ├── notifier.py         # NotifierPort protocol
+│   └── repository.py       # RepositoryPort protocol
+├── processing/             # Processing pipeline
+│   ├── processor.py        # Chain-of-responsibility pattern
+│   └── default_processors.py
+├── repositories/           # NEW: Repository pattern implementations
+│   └── expose_repository.py # SQLite repository for exposes
+└── web/                    # Flask web interface
+```
+
+### Component Overview
+
+#### 1. **Domain Models** (`flathunter/domain/`)
+
+Type-safe domain objects that represent core business entities:
+
+```python
+from flathunter.domain.models import Expose
+
+expose = Expose(
+    id=12345,
+    url="https://example.com/property/12345",
+    title="Beautiful 2-bedroom flat",
+    price="1200€",
+    crawler="immobilienscout",
+    size="75qm",
+    rooms="2",
+    address="Berlin Mitte"
+)
+
+# Convert to/from dict for backward compatibility
+expose_dict = expose.to_dict()
+expose_obj = Expose.from_dict(expose_dict)
+```
+
+**Benefits:**
+- IDE autocomplete and type checking
+- Catches typos at development time
+- Clear documentation of expected fields
+- Backward compatible with dict-based code
+
+#### 2. **Ports (Interfaces)** (`flathunter/ports/`)
+
+Protocol classes define contracts that components must implement:
+
+```python
+# CrawlerPort - what all crawlers must implement
+class CrawlerPort(Protocol):
+    URL_PATTERN: re.Pattern
+    def crawl(self, url: str, max_pages: Optional[int] = None) -> List[Dict]: ...
+    def get_name(self) -> str: ...
+
+# NotifierPort - what all notifiers must implement
+class NotifierPort(Protocol):
+    def notify(self, message: str) -> None: ...
+
+# RepositoryPort - what all persistence layers must implement
+class RepositoryPort(Protocol):
+    def is_processed(self, expose_id: int | str) -> bool: ...
+    def mark_processed(self, expose_id: int | str) -> None: ...
+    def save_expose(self, expose: Dict) -> None: ...
+```
+
+**Benefits:**
+- Clear contracts for plugin authors
+- Enables dependency injection
+- Supports testing with mock implementations
+- No runtime overhead (static type checking only)
+
+#### 3. **Factory Pattern** (`flathunter/config/`)
+
+Centralizes registration and creation of crawlers and notifiers:
+
+```python
+# Crawler Factory - registers all available crawlers
+from flathunter.config import get_default_crawler_factory
+
+factory = get_default_crawler_factory()
+# Returns factory with 10 crawlers pre-registered:
+# - Germany: ImmoScout24, WG-Gesucht, Kleinanzeigen, Immowelt, VrmImmo
+# - UK: Zoopla, Rightmove
+# - Italy: Immobiliare, Subito
+# - Spain: Idealista
+
+# Get appropriate crawler for a URL
+crawler = factory.get_crawler_for_url("https://www.zoopla.co.uk/...", config)
+
+# Notifier Factory - registers all available notifiers
+from flathunter.config import get_default_notifier_factory
+
+factory = get_default_notifier_factory()
+# Supports: telegram, slack, mattermost, apprise, file
+notifiers = factory.create_enabled(['telegram', 'slack'], config)
+```
+
+**Adding a New Crawler:**
+
+```python
+# 1. Create your crawler class (implements CrawlerPort)
+class NewSiteCrawler(Crawler):
+    URL_PATTERN = re.compile(r'https://newsite\.com')
+
+    def crawl(self, url, max_pages=None):
+        # Implementation
+        return exposes
+
+# 2. Register it with the factory (no core code changes!)
+from flathunter.config.crawler_factory import get_default_crawler_factory
+
+factory = get_default_crawler_factory()
+factory.register(NewSiteCrawler.URL_PATTERN, NewSiteCrawler)
+```
+
+#### 4. **Repository Pattern** (`flathunter/repositories/`)
+
+Abstracts persistence layer for cleaner separation:
+
+```python
+from flathunter.repositories import SqliteExposeRepository
+
+# Create repository instance
+repo = SqliteExposeRepository('./data/flathunter.db')
+
+# Check if already processed
+if not repo.is_processed(expose['id']):
+    # Save and mark as processed
+    repo.save_expose(expose)
+    repo.mark_processed(expose['id'])
+
+# Retrieve recent exposes
+recent = repo.get_recent_exposes(count=20)
+```
+
+**Benefits:**
+- Easy to swap storage backends (PostgreSQL, MongoDB, etc.)
+- Clean separation from business logic
+- Testable with in-memory implementations
+- Thread-safe database connections
+
+#### 5. **Processing Pipeline** (`flathunter/processing/`)
+
+Chain-of-Responsibility pattern for processing exposes:
+
+```python
+from flathunter.processing.processor import ProcessorChain
+
+# Build processing pipeline
+chain = (ProcessorChain.builder(config)
+    .apply_filter(filter_set)           # Filter unwanted listings
+    .crawl_expose_details()             # Fetch additional details
+    .resolve_addresses()                # Resolve addresses
+    .calculate_durations()              # Calculate travel times
+    .save_all_exposes(id_watch)         # Save to database
+    .send_messages(receivers)           # Send notifications
+    .build())
+
+# Process exposes through pipeline
+processed = chain.process(raw_exposes)
+```
+
+Each processor in the chain:
+- Receives a sequence of exposes
+- Transforms/filters them
+- Passes results to the next processor
+
+**Processor Types:**
+- **Filter**: Remove unwanted listings based on criteria
+- **CrawlExposeDetails**: Fetch additional information from expose pages
+- **AddressResolver**: Extract addresses from listings
+- **GMapsDurationProcessor**: Calculate travel times via Google Maps
+- **SaveAllExposesProcessor**: Persist to database
+- **Notifiers**: Send via Telegram/Slack/etc.
+
+#### 6. **Web Crawling** (`flathunter/crawler/`)
+
+Each crawler is responsible for:
+
+1. **URL Pattern Matching**: Define which URLs it can handle
+2. **Page Fetching**: Request pages (with Chrome/Selenium for bot-protected sites)
+3. **HTML Parsing**: Extract expose data using BeautifulSoup/Selenium
+4. **Data Normalization**: Return standardized expose dictionaries
+
+**Example Crawler Structure:**
+
+```python
+class Zoopla(Crawler):
+    URL_PATTERN = re.compile(r'https://www\.zoopla\.co\.uk')
+
+    def __init__(self, config):
+        super().__init__(config)
+        self.config = config
+
+    def crawl(self, url, max_pages=None):
+        """Crawl Zoopla listings"""
+        soup = self.get_page(url)  # Handles Chrome/Selenium if needed
+        return self.extract_data(soup)
+
+    def extract_data(self, soup):
+        """Parse HTML and extract expose data"""
+        exposes = []
+        for listing in soup.select('.listing-results-wrapper article'):
+            expose = {
+                'id': self.extract_id(listing),
+                'url': self.extract_url(listing),
+                'title': self.extract_title(listing),
+                'price': self.extract_price(listing),
+                'size': self.extract_size(listing),
+                'rooms': self.extract_rooms(listing),
+                'crawler': self.get_name()
+            }
+            exposes.append(expose)
+        return exposes
+```
+
+**Bot Protection Handling:**
+
+- **Headless Chrome**: Selenium WebDriver with Chrome for JavaScript-heavy sites
+- **Captcha Solving**: Integration with 2Captcha/Capmonster for ImmoScout24
+- **Cookie Management**: Ability to inject cookies for bot detection bypass
+- **Proxy Support**: Rotating proxy support for IP-based rate limiting
+
+#### 7. **Notification System** (`flathunter/notifiers/`)
+
+Pluggable notifier architecture:
+
+```python
+class SenderTelegram(Notifier):
+    """Send notifications via Telegram"""
+
+    def __init__(self, config, receivers=None):
+        self.bot_token = config.telegram_bot_token()
+        self.receiver_ids = receivers or config.telegram_receiver_ids()
+
+    def notify(self, message):
+        """Send message to all receivers"""
+        for receiver_id in self.receiver_ids:
+            self.send_telegram_message(receiver_id, message)
+```
+
+**Supported Notifiers:**
+- **Telegram**: Bot-based messaging
+- **Slack**: Webhook-based notifications
+- **Mattermost**: Webhook-based notifications
+- **Apprise**: Universal notification library (supports 80+ services)
+- **File**: Local JSON file output (for testing)
+
+#### 8. **Configuration Management** (`flathunter/config/`)
+
+Type-safe configuration with YAML support:
+
+```python
+from flathunter.config.settings import Settings
+
+# Load from YAML file
+settings = Settings.from_yaml('config.yaml')
+
+# Access typed configuration
+print(settings.target_urls)  # List[str]
+print(settings.loop_period_seconds)  # int
+print(settings.telegram_bot_token)  # Optional[str]
+
+# Environment variable overrides
+# Settings automatically checks env vars like:
+# - TARGET_URLS, TELEGRAM_BOT_TOKEN, DATABASE_LOCATION, etc.
+```
+
+**Configuration Sources (priority order):**
+1. Environment variables (highest priority)
+2. YAML configuration file
+3. Default values in Settings dataclass
+
+### Data Flow
+
+```
+┌─────────────────┐
+│   Config File   │
+│   config.yaml   │
+└────────┬────────┘
+         │
+         v
+┌─────────────────┐      ┌──────────────────┐
+│ YamlConfig      │─────>│ CrawlerFactory   │
+│ (loads config)  │      │ (creates crawlers)│
+└────────┬────────┘      └────────┬─────────┘
+         │                        │
+         v                        v
+┌─────────────────┐      ┌──────────────────┐
+│  Hunter (app)   │      │   Crawler Pool   │
+│  - Runs loop    │      │  - ImmoScout24   │
+│  - Triggers     │      │  - Zoopla        │
+│    crawls       │      │  - Rightmove     │
+└────────┬────────┘      │  - etc.          │
+         │               └────────┬─────────┘
+         v                        │
+┌─────────────────┐              │
+│ ProcessorChain  │<─────────────┘
+│  Builder        │
+└────────┬────────┘
+         │
+         v
+┌─────────────────────────────────────────┐
+│        Processing Pipeline              │
+│                                         │
+│  1. Filter (exclude unwanted)           │
+│  2. CrawlExposeDetails (fetch more)     │
+│  3. AddressResolver (get addresses)     │
+│  4. GMapsDuration (calculate times)     │
+│  5. SaveAllExposes (persist to DB)      │
+│  6. Notifiers (send to Telegram/Slack)  │
+└────────┬────────────────────────────────┘
+         │
+         v
+┌─────────────────┐      ┌──────────────────┐
+│  Repository     │      │  Notifier Pool   │
+│  (SQLite)       │      │  - Telegram      │
+│  - processed IDs│      │  - Slack         │
+│  - exposes      │      │  - Mattermost    │
+└─────────────────┘      └──────────────────┘
+```
+
+### Thread Safety
+
+- **Database Connections**: Thread-local connections in Repository pattern
+- **Chrome Instances**: Each crawler manages its own browser instance
+- **Concurrent Processing**: ProcessorChain is stateless and thread-safe
+
+### Performance Considerations
+
+1. **Lazy Loading**: Crawlers only instantiated when needed
+2. **Connection Pooling**: Thread-local database connections
+3. **Caching**: Chrome driver instances cached per crawler
+4. **Batch Processing**: Exposes processed in batches through pipeline
+
+### Testing Strategy
+
+```python
+# Unit tests use protocols for mocking
+from flathunter.ports import CrawlerPort
+
+class MockCrawler:
+    """Test double implementing CrawlerPort"""
+    URL_PATTERN = re.compile(r'https://test\.com')
+
+    def crawl(self, url, max_pages=None):
+        return [{'id': 1, 'title': 'Test', ...}]
+
+# Integration tests use in-memory database
+repo = SqliteExposeRepository(':memory:')
+
+# End-to-end tests use real crawlers with recorded responses
+```
+
+### Migration Path
+
+The architecture supports gradual migration:
+
+1. **Phase 1 Complete**: Domain models available but optional
+2. **Phase 2 Complete**: Protocols defined, components implicitly satisfy them
+3. **Phase 3 Complete**: Factories in use with fallback to legacy code
+4. **Phase 4 Complete**: Repository pattern available with backward compatibility
+
+**Old code continues working unchanged while new code can leverage modern patterns.**
+
+### Future Enhancements
+
+The architecture is designed to support:
+
+- **Dynamic Plugin Loading**: Load crawlers from external packages at runtime
+- **Multiple Storage Backends**: PostgreSQL, MongoDB, Redis via Repository pattern
+- **Async Processing**: AsyncIO-based crawlers for higher throughput
+- **Distributed Crawling**: Multiple workers with shared state
+- **GraphQL API**: Type-safe API using domain models
+- **Event Sourcing**: Audit trail of all expose state changes

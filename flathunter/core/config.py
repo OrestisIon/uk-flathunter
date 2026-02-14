@@ -147,19 +147,26 @@ Preis: {price}
         return self.config[value]
 
     def init_searchers(self):
-        """Initialize search plugins"""
-        self.__searchers__ = [
-            Immobilienscout(self),
-            WgGesucht(self),
-            Kleinanzeigen(self),
-            Immowelt(self),
-            Subito(self),
-            Immobiliare(self),
-            Idealista(self),
-            VrmImmo(self),
-            Zoopla(self),
-            Rightmove(self)
-        ]
+        """Initialize search plugins using factory pattern"""
+        try:
+            from flathunter.config import get_default_crawler_factory
+            crawler_factory = get_default_crawler_factory()
+            self.__searchers__ = crawler_factory.create_all(self)
+        except ImportError:
+            # Fallback to old hard-coded list if factory not available
+            logger.warning("Could not import crawler factory, using legacy initialization")
+            self.__searchers__ = [
+                Immobilienscout(self),
+                WgGesucht(self),
+                Kleinanzeigen(self),
+                Immowelt(self),
+                Subito(self),
+                Immobiliare(self),
+                Idealista(self),
+                VrmImmo(self),
+                Zoopla(self),
+                Rightmove(self)
+            ]
 
     def check_deprecated(self):
         """Notifies user of deprecated config items"""

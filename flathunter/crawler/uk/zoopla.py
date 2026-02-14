@@ -1,13 +1,15 @@
 """Expose crawler for Zoopla (UK)"""
 import re
+import time
+import json
 from typing import Optional, List, Dict
 from bs4 import BeautifulSoup, Tag
 
 from flathunter.core.logging import logger
-from flathunter.core.abstract_crawler import Crawler
+from flathunter.crawling.webdriver_crawler import WebdriverCrawler
 
 
-class Zoopla(Crawler):
+class Zoopla(WebdriverCrawler):
     """Implementation of Crawler interface for Zoopla"""
 
     URL_PATTERN = re.compile(r'https://www\.zoopla\.co\.uk')
@@ -16,30 +18,126 @@ class Zoopla(Crawler):
         super().__init__(config)
         self.config = config
 
+    def get_page(self, search_url, driver=None, page_no=None) -> BeautifulSoup:
+        """Applies a page number to a formatted search URL and fetches the exposes at that page"""
+        driver = self.get_driver()
+        soup = self.get_soup_from_url(search_url, driver=driver)
+
+        # Wait for JavaScript to render property listings
+        # Zoopla uses heavy JavaScript, so we need to give it time
+        logger.debug("Waiting for JavaScript to render property listings...")
+        time.sleep(3)
+
+        # Refresh the soup with updated page source
+        if driver:
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(driver.page_source, 'lxml')
+
+        return soup
+
     def extract_data(self, soup: BeautifulSoup) -> List[Dict]:
-        """Extracts all property listings from a provided Soup object"""
+        """Extracts all property listings from JSON-LD structured data"""
         entries = []
 
-        # Zoopla uses a data-testid attribute for property cards
-        # The structure is: <div data-testid="search-result">
-        findings = soup.find_all('div', attrs={'data-testid': lambda x: x and 'search-result' in x})
+        # Zoopla provides all property data in JSON-LD (Schema.org) structured data
+        # Find the JSON-LD script tag with type="application/ld+json"
+        json_ld_scripts = soup.find_all('script', type='application/ld+json')
 
-        if not findings:
-            # Fallback: try to find listing cards by common class patterns
-            findings = soup.find_all('div', class_=re.compile(r'listing|search-result|property-card', re.I))
+        for script in json_ld_scripts:
+            try:
+                data = json.loads(script.string)
 
-        logger.debug('Found %d potential property cards', len(findings))
+                # Check if this is the SearchResultsPage with ItemList
+                if isinstance(data, dict) and '@graph' in data:
+                    # Handle @graph format
+                    for item in data['@graph']:
+                        if item.get('@type') == 'SearchResultsPage' and 'mainEntity' in item:
+                            entries = self._parse_item_list(item['mainEntity'])
+                            break
+                elif isinstance(data, dict) and data.get('@type') == 'SearchResultsPage':
+                    # Handle direct SearchResultsPage format
+                    if 'mainEntity' in data:
+                        entries = self._parse_item_list(data['mainEntity'])
+                        break
 
-        for card in findings:
-            if not isinstance(card, Tag):
+                if entries:
+                    break
+
+            except (json.JSONDecodeError, KeyError, TypeError) as e:
+                logger.debug(f"Could not parse JSON-LD: {e}")
                 continue
 
-            details = self._parse_property_card(card)
-            if details is not None:
+        logger.debug('Number of valid entries found from JSON-LD: %d', len(entries))
+        return entries
+
+    def _parse_item_list(self, item_list: Dict) -> List[Dict]:
+        """Parse the ItemList from JSON-LD structured data"""
+        entries = []
+
+        if not isinstance(item_list, dict) or item_list.get('@type') != 'ItemList':
+            return entries
+
+        items = item_list.get('itemListElement', [])
+        logger.debug(f"Found {len(items)} items in JSON-LD ItemList")
+
+        for list_item in items:
+            if not isinstance(list_item, dict):
+                continue
+
+            product = list_item.get('item', {})
+            if not isinstance(product, dict):
+                continue
+
+            # Extract property details
+            url = product.get('url', '')
+            name = product.get('name', '')
+            description = product.get('description', '')
+            image = product.get('image', '')
+
+            # Extract price from offers
+            offers = product.get('offers', {})
+            price = offers.get('price', '')
+            currency = offers.get('priceCurrency', 'GBP')
+
+            # Format price with currency
+            if price:
+                price_formatted = f"£{price} pcm"
+            else:
+                price_formatted = ""
+
+            # Extract property ID from URL
+            property_id = self._extract_id_from_url(url)
+
+            # Extract number of bedrooms from name
+            rooms = self._extract_rooms_from_name(name)
+
+            if url and name and price:
+                details = {
+                    'id': property_id if property_id else url,
+                    'url': url,
+                    'title': name,
+                    'price': price_formatted,
+                    'size': "",  # Not provided in JSON-LD
+                    'rooms': rooms,
+                    'address': "",  # Will be extracted from description or detail page
+                    'image': image,
+                    'crawler': self.get_name()
+                }
                 entries.append(details)
 
-        logger.debug('Number of valid entries found: %d', len(entries))
         return entries
+
+    def _extract_rooms_from_name(self, name: str) -> str:
+        """Extract number of bedrooms from property name"""
+        # Match patterns like "1 bed", "2 bed", "Studio"
+        if 'studio' in name.lower():
+            return "0"
+
+        bedroom_match = re.search(r'(\d+)\s*bed', name, re.I)
+        if bedroom_match:
+            return bedroom_match.group(1)
+
+        return ""
 
     def _parse_property_card(self, card: Tag) -> Optional[Dict]:
         """Parse a property card element to extract details"""

@@ -92,6 +92,17 @@ ENV/
 .webkit_cache/
 processed_ids.db
 
+# Data directory - runtime data and databases
+data/*.db
+data/*.json
+data/*.sqlite
+data/*.sqlite3
+
+# Script outputs and debug files
+scripts/debug_*.html
+scripts/*.db
+scripts/*.json
+
 .idea/
 config.yaml
 

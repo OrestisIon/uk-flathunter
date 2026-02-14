@@ -6,7 +6,7 @@ from flathunter.processing.default_processors import AddressResolver
 from flathunter.processing.default_processors import Filter
 from flathunter.processing.default_processors import LambdaProcessor
 from flathunter.processing.default_processors import CrawlExposeDetails
-from flathunter.notifiers import SenderMattermost, SenderTelegram, SenderApprise, SenderSlack
+from flathunter.notifiers import SenderMattermost, SenderTelegram, SenderApprise, SenderSlack, SenderFile
 from flathunter.processing.gmaps_duration_processor import GMapsDurationProcessor
 from flathunter.persistence.idmaintainer import SaveAllExposesProcessor
 from flathunter.core.abstract_processor import Processor
@@ -20,16 +20,31 @@ class ProcessorChainBuilder:
         self.config = config
 
     def send_messages(self, receivers=None):
-        """Add processor that sends messages for exposes"""
-        notifiers = self.config.notifiers()
-        if 'telegram' in notifiers:
-            self.processors.append(SenderTelegram(self.config, receivers=receivers))
-        if 'mattermost' in notifiers:
-            self.processors.append(SenderMattermost(self.config))
-        if 'apprise' in notifiers:
-            self.processors.append(SenderApprise(self.config))
-        if 'slack' in notifiers:
-            self.processors.append(SenderSlack(self.config))
+        """Add processor that sends messages for exposes using factory pattern"""
+        try:
+            from flathunter.config import get_default_notifier_factory
+            notifier_factory = get_default_notifier_factory()
+            enabled_names = self.config.notifiers()
+
+            # Create notifiers using factory
+            for notifier in notifier_factory.create_enabled(enabled_names, self.config):
+                # Special handling for Telegram receiver override
+                if isinstance(notifier, SenderTelegram) and receivers is not None:
+                    notifier = SenderTelegram(self.config, receivers=receivers)
+                self.processors.append(notifier)
+        except ImportError:
+            # Fallback to old hard-coded approach if factory not available
+            notifiers = self.config.notifiers()
+            if 'telegram' in notifiers:
+                self.processors.append(SenderTelegram(self.config, receivers=receivers))
+            if 'mattermost' in notifiers:
+                self.processors.append(SenderMattermost(self.config))
+            if 'apprise' in notifiers:
+                self.processors.append(SenderApprise(self.config))
+            if 'slack' in notifiers:
+                self.processors.append(SenderSlack(self.config))
+            if 'file' in notifiers:
+                self.processors.append(SenderFile(self.config))
         return self
 
     def resolve_addresses(self):
