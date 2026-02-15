@@ -19,6 +19,15 @@ class Expose:
     durations: Optional[str] = None
     created_at: Optional[str] = None
 
+    # AI/LLM enrichment fields
+    ai_score: Optional[float] = None
+    ai_reasoning: Optional[str] = None
+    ai_highlights: Optional[List[str]] = None
+    ai_warnings: Optional[List[str]] = None
+    ai_confidence: Optional[str] = None
+    ai_red_flags: Optional[List[str]] = None
+    extracted_features: Optional[Dict[str, Any]] = None
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dict for backward compatibility"""
         result = asdict(self)

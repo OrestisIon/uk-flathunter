@@ -1,0 +1,101 @@
+---
+# Flathunter Configuration with LLM Integration
+# Copy to config.yaml and customize
+
+# Enable verbose logging
+verbose: true
+
+# Loop settings
+loop:
+    active: yes
+    sleeping_time: 600  # Check every 10 minutes
+    random_jitter: True
+
+# Your search URLs
+urls:
+  - https://www.zoopla.co.uk/to-rent/property/wc1x/?beds_min=0&price_max=2500
+
+# Basic filters (still useful for initial filtering)
+filters:
+  min_price: 1000
+  max_price: 2500
+  min_size: 40
+  # max_price_per_square: 60  # £ per sqm
+
+# Message format for notifications
+message: |
+    🏠 {title}
+
+    💰 {price} | 🛏️ {rooms} | 📏 {size}
+    📍 {address}
+
+    {ai_analysis}
+
+    🔗 {url}
+
+title: "{crawler}: {title}"
+
+# ==========================================
+# LLM CONFIGURATION (NEW!)
+# ==========================================
+llm:
+  enabled: true
+
+  # Get your API key from: https://console.anthropic.com/
+  api_key: YOUR_ANTHROPIC_API_KEY_HERE
+
+  # Model selection (cost vs quality tradeoff)
+  # - claude-haiku-4.5: Fast & cheap ($1/$5 per M tokens)
+  # - claude-sonnet-4.5: Balanced ($3/$15 per M tokens)
+  # - claude-opus-4.6: Most capable ($5/$25 per M tokens)
+  model: claude-haiku-4.5
+
+  # Minimum confidence to show AI analysis
+  min_confidence: 0.7
+
+  # Features to enable
+  features:
+    - scoring           # Score properties 0-10
+    - enrichment        # Extract features from descriptions
+    - red_flag_detection  # Detect warning signs
+
+  # Personalize AI recommendations
+  priorities:
+    - "quiet neighborhood"
+    - "good natural light"
+    - "near parks or green spaces"
+    - "good public transport links"
+
+  dealbreakers:
+    - "ground floor without garden"
+    - "basement flat"
+    - "north-facing only"
+
+# Choose which notifiers to use
+notifiers:
+  - file  # Start with file output to test
+  # - telegram  # Enable once you're happy with results
+
+# File notifier (good for testing LLM output)
+file:
+  output_file: flathunter_results_with_ai.json
+
+# Telegram configuration (optional)
+# telegram:
+#   bot_token: YOUR_BOT_TOKEN
+#   notify_with_images: true
+#   receiver_ids:
+#     - YOUR_CHAT_ID
+
+# Google Maps API (optional, for commute calculations)
+# google_maps_api:
+#   key: YOUR_GOOGLE_MAPS_API_KEY
+#   enable: False
+
+# Captcha solving (for ImmoScout24, if needed)
+# captcha:
+#   capmonster:
+#     api_key: YOUR_CAPMONSTER_KEY
+
+# Database location
+database_location: ./data

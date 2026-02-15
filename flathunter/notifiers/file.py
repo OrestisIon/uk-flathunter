@@ -51,7 +51,32 @@ class SenderFile(Processor, Notifier):
         print(f"Rooms: {expose.get('rooms', 'N/A')}")
         print(f"Size: {expose.get('size', 'N/A')}")
         print(f"Address: {expose.get('address', 'N/A')}")
-        print(f"URL: {expose.get('url', 'N/A')}")
+
+        # Display AI analysis if available
+        if expose.get('ai_score') is not None:
+            score = expose.get('ai_score')
+            stars = '⭐' * int(round(score))
+            print(f"\n🤖 AI SCORE: {score}/10 {stars}")
+
+            if expose.get('ai_reasoning'):
+                print(f"   Reasoning: {expose.get('ai_reasoning')}")
+
+            if expose.get('ai_highlights'):
+                print(f"   ✅ Highlights:")
+                for highlight in expose.get('ai_highlights', []):
+                    print(f"      • {highlight}")
+
+            if expose.get('ai_warnings'):
+                print(f"   ⚠️  Warnings:")
+                for warning in expose.get('ai_warnings', []):
+                    print(f"      • {warning}")
+
+            if expose.get('ai_red_flags'):
+                print(f"   🚩 Red Flags:")
+                for flag in expose.get('ai_red_flags', []):
+                    print(f"      • {flag}")
+
+        print(f"\nURL: {expose.get('url', 'N/A')}")
         print(f"Saved to: {self.output_path.absolute()}")
         print(f"{'='*60}\n")
 
