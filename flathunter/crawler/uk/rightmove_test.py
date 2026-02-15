@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 import pytest
 
 from flathunter.crawler.uk.rightmove import Rightmove

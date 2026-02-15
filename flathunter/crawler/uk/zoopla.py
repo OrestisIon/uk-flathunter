@@ -64,7 +64,7 @@ class Zoopla(WebdriverCrawler):
                     break
 
             except (json.JSONDecodeError, KeyError, TypeError) as e:
-                logger.debug(f"Could not parse JSON-LD: {e}")
+                logger.debug("Could not parse JSON-LD: %s", e)
                 continue
 
         logger.debug('Number of valid entries found from JSON-LD: %d', len(entries))
@@ -78,7 +78,7 @@ class Zoopla(WebdriverCrawler):
             return entries
 
         items = item_list.get('itemListElement', [])
-        logger.debug(f"Found {len(items)} items in JSON-LD ItemList")
+        logger.debug("Found %d items in JSON-LD ItemList", len(items))
 
         for list_item in items:
             if not isinstance(list_item, dict):

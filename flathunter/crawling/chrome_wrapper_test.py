@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 import pytest
 import unittest
 from unittest.mock import patch
@@ -7,10 +8,11 @@ from flathunter.core.exceptions import ChromeNotFound
 
 
 def calc_linux_binary_names():
-	"""
-	Creates a list containing empty lists for each name in CHROME_BINARY_NAMES that does not start with a forward slash.
-	"""
-	return [[] for name in CHROME_BINARY_NAMES if not name.startswith('/')]
+    """
+    Creates a list containing empty lists for each name in CHROME_BINARY_NAMES
+    that does not start with a forward slash.
+    """
+    return [[] for name in CHROME_BINARY_NAMES if not name.startswith('/')]
 
 
 """

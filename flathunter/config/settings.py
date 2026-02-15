@@ -1,8 +1,8 @@
 """Typed configuration settings"""
+import os
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any
 import yaml
-import os
 
 # Load environment variables from .env file
 try:

@@ -67,10 +67,11 @@ class PropertyScorerProcessor(Processor):
             expose['ai_warnings'] = analysis.get('warnings', [])
             expose['ai_confidence'] = analysis.get('confidence', 'medium')
 
-            logger.info(f"Scored property {expose.get('id')}: {analysis.get('score')}/10")
+            logger.info("Scored property %s: %s/10",
+                        expose.get('id'), analysis.get('score'))
 
         except Exception as e:
-            logger.error(f"Error scoring property {expose.get('id')}: {e}")
+            logger.error("Error scoring property %s: %s", expose.get('id'), e)
             expose['ai_score'] = None
             expose['ai_error'] = str(e)
 
@@ -90,7 +91,7 @@ class PropertyScorerProcessor(Processor):
             # Return as iterator but wrapped in map for type compatibility
             return map(lambda x: x, results)
         except Exception as e:
-            logger.error(f"Error in batch processing: {e}")
+            logger.error("Error in batch processing: %s", e)
             # Fall back to sequential processing
             return map(self.process_expose, expose_list)
 
@@ -106,7 +107,7 @@ class PropertyScorerProcessor(Processor):
                 expose['ai_warnings'] = analysis.get('warnings', [])
                 expose['ai_confidence'] = analysis.get('confidence', 'medium')
             except Exception as e:
-                logger.error(f"Error scoring {expose.get('id')}: {e}")
+                logger.error("Error scoring %s: %s", expose.get('id'), e)
                 expose['ai_score'] = None
             return expose
 
@@ -245,7 +246,7 @@ CONFIDENCE: [high/medium/low]
                     result['reasoning'] += ' ' + line
 
         except Exception as e:
-            logger.error(f"Error parsing LLM response: {e}")
+            logger.error("Error parsing LLM response: %s", e)
 
         # Validation
         if result['score'] is not None:

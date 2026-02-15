@@ -1,7 +1,6 @@
-import os
+# pylint: disable=missing-docstring
 import unittest
 import pytest
-from functools import reduce
 
 from flathunter.crawler.germany.vrmimmo import VrmImmo
 from flathunter.testing.config import StringConfig

@@ -1,5 +1,6 @@
-import pytest
+# pylint: disable=missing-docstring
 from time import sleep
+import pytest
 
 from flathunter.crawler.germany.immobilienscout import Immobilienscout
 from flathunter.testing.config import StringConfig
@@ -109,24 +110,24 @@ def test_url_conversion(crawler, test_url, test_api_url):
 
 @pytest.mark.parametrize("test_api_url", TEST_API_URLS)
 def test_api_response(crawler, test_api_url):
-  response = crawler.fetch_api_data(test_api_url)
-  assert response.status_code == 200
-  # throttle to not flood api
-  sleep(1)
+    response = crawler.fetch_api_data(test_api_url)
+    assert response.status_code == 200
+    # throttle to not flood api
+    sleep(1)
 
 def test_extract_data_from_response(crawler):
-  entries = crawler.get_results(crawler.config.target_urls()[0])
-  required_keys = {
-    "id",
-    "url",
-    "image",
-    "title",
-    "address",
-    "crawler",
-    "price",
-    "size",
-    "rooms"
-  }
-  assert entries
-  for entry in entries:
-    assert required_keys == entry.keys()
+    entries = crawler.get_results(crawler.config.target_urls()[0])
+    required_keys = {
+        "id",
+        "url",
+        "image",
+        "title",
+        "address",
+        "crawler",
+        "price",
+        "size",
+        "rooms"
+    }
+    assert entries
+    for entry in entries:
+        assert required_keys == entry.keys()

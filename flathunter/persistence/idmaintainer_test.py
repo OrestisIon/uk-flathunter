@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 import unittest
 import datetime
 import re
@@ -111,8 +112,8 @@ def test_exposes_are_returned_filtered():
     hunter = Hunter(config, id_watch)
     hunter.hunt_flats()
     hunter.hunt_flats()
-    filter = Filter.builder().read_config(StringConfig('{"filters":{"max_size":70}}')).build()
-    saved = id_watch.get_recent_exposes(10, filter_set=filter)
+    expose_filter = Filter.builder().read_config(StringConfig('{"filters":{"max_size":70}}')).build()
+    saved = id_watch.get_recent_exposes(10, filter_set=expose_filter)
     assert len(saved) == 10
     for expose in saved:
         assert compare_int_less_equal(expose, 'size', 70)
@@ -120,16 +121,16 @@ def test_exposes_are_returned_filtered():
 def test_filters_for_user_are_saved():
     config = StringConfig(string=IdMaintainerTest.CONFIG_WITH_FILTERS)
     id_watch = IdMaintainer(":memory:")
-    filter = { 'fish': 'cat' }
+    user_filter = { 'fish': 'cat' }
     hunter = WebHunter(config, id_watch)
-    hunter.set_filters_for_user(123, filter)
-    assert hunter.get_filters_for_user(123) == filter
+    hunter.set_filters_for_user(123, user_filter)
+    assert hunter.get_filters_for_user(123) == user_filter
 
 def test_all_filters_can_be_loaded():
     config = StringConfig(string=IdMaintainerTest.CONFIG_WITH_FILTERS)
     id_watch = IdMaintainer(":memory:")
-    filter = { 'fish': 'cat' }
+    user_filter = { 'fish': 'cat' }
     hunter = WebHunter(config, id_watch)
-    hunter.set_filters_for_user(123, filter)
-    hunter.set_filters_for_user(124, filter)
-    assert id_watch.get_user_settings() == [ (123, { 'filters': filter }), (124, { 'filters': filter }) ]
+    hunter.set_filters_for_user(123, user_filter)
+    hunter.set_filters_for_user(124, user_filter)
+    assert id_watch.get_user_settings() == [ (123, { 'filters': user_filter }), (124, { 'filters': user_filter }) ]

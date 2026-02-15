@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 import json
 import unittest
 import datetime
@@ -108,8 +109,10 @@ class SenderTelegramTest(unittest.TestCase):
                 "retry_after": 2
             }
         }'''
-        m.post('https://api.telegram.org/botdummy_token/sendMessage', text=mock_response, status_code=429)
+        m.post('https://api.telegram.org/botdummy_token/sendMessage',
+               text=mock_response, status_code=429)
         before = datetime.datetime.now()
         self.assertEqual(None, sender.notify("result"), "Expected no message to be sent")
         after = datetime.datetime.now()
+
         self.assertEqual(2, (after - before).seconds)

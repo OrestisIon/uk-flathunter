@@ -1,6 +1,6 @@
-import unittest
-import yaml
+# pylint: disable=missing-docstring
 import re
+import unittest
 import requests_mock
 from flathunter.app.hunter import Hunter
 from flathunter.persistence.idmaintainer import IdMaintainer
@@ -47,4 +47,5 @@ durations:
         if len(without_durations) > 0:
             for expose in without_durations:
                 print("Got expose: ", expose)
+
         self.assertTrue(len(without_durations) == 0, "Expected durations to be calculated")

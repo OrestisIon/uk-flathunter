@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 import unittest
 import re
 from typing import Optional, Dict, List
@@ -9,19 +10,19 @@ from flathunter.testing.util import count
 from flathunter.testing.config import StringConfig
 
 def find_number_in_expose(expose: Dict, field: str) -> Optional[float]:
-  search_text = expose.get(field, "")
-  match = re.search(r'\d+([\.,]\d+)?', search_text)
-  if match is None:
-    return None
-  return float(match[0])
+    search_text = expose.get(field, "")
+    match = re.search(r'\d+([\.,]\d+)?', search_text)
+    if match is None:
+        return None
+    return float(match[0])
 
 def filter_less_than(exposes: List[Dict], field: str, comparison: float) -> List[Dict]:
-  return list(filter(
-    lambda expose: (find_number_in_expose(expose, field) or 1000000) < comparison, exposes))
+    return list(filter(
+        lambda expose: (find_number_in_expose(expose, field) or 1000000) < comparison, exposes))
 
 def filter_greater_than(exposes: List[Dict], field: str, comparison: float) -> List[Dict]:
-  return list(filter(
-    lambda expose: (find_number_in_expose(expose, field) or 0) > comparison, exposes))
+    return list(filter(
+        lambda expose: (find_number_in_expose(expose, field) or 0) > comparison, exposes))
 
 class HunterTest(unittest.TestCase):
 

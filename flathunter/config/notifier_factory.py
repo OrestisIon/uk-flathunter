@@ -12,7 +12,7 @@ class NotifierFactory:
     def register(self, name: str, notifier_class: Type[Notifier]):
         """Register a notifier class"""
         self._registry[name] = notifier_class
-        logger.debug(f"Registered notifier: {name}")
+        logger.debug("Registered notifier: %s", name)
 
     def create_enabled(self, enabled_names: List[str], config) -> List[Notifier]:
         """Create instances of enabled notifiers"""
@@ -21,7 +21,7 @@ class NotifierFactory:
             if name in self._registry:
                 notifiers.append(self._registry[name](config))
             else:
-                logger.warning(f"Unknown notifier: {name}")
+                logger.warning("Unknown notifier: %s", name)
         return notifiers
 
 def get_default_notifier_factory() -> NotifierFactory:

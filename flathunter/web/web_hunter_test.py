@@ -1,7 +1,7 @@
-import pytest
-import tempfile
-import yaml
+# pylint: disable=missing-docstring
 import json
+import tempfile
+import pytest
 import requests_mock
 
 from flask import session
@@ -113,7 +113,7 @@ def test_render_index_after_login(hunt_client):
     assert 'user' in session
     rv = hunt_client.get('/')
     assert rv.status_code == 200
- 
+
 @requests_mock.Mocker(kw='m')
 def test_do_not_send_messages_if_notifications_disabled(hunt_client, **kwargs):
     m = kwargs['m']

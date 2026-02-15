@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 import os
 import unittest
 from typing import Dict
@@ -38,4 +39,3 @@ class WgGesuchtCrawlerTest(unittest.TestCase):
             soup = BeautifulSoup(fixture, 'lxml')
         entries = self.crawler.extract_data(soup)
         assert len(entries) == 20
-

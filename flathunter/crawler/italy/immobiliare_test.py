@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 import unittest
 from flathunter.crawler.italy.immobiliare import Immobiliare
 from flathunter.testing.config import StringConfig

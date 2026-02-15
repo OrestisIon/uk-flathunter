@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 import unittest
 from flathunter.app.hunter import Hunter
 from flathunter.persistence.idmaintainer import IdMaintainer

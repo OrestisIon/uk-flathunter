@@ -1,5 +1,5 @@
 """Repository port interface"""
-from typing import Protocol, List, Dict, Optional
+from typing import Protocol, List, Dict
 
 class RepositoryPort(Protocol):
     """Interface for expose persistence"""

@@ -60,7 +60,7 @@ class SqliteExposeRepository:
             )
             conn.commit()
         except lite.Error as e:
-            logger.error(f"Database error saving expose: {e}")
+            logger.error("Database error saving expose: %s", e)
 
     def get_recent_exposes(self, count: int = 20) -> List[Dict]:
         """Get recently saved exposes"""

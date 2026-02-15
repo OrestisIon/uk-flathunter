@@ -39,10 +39,11 @@ class PropertyEnrichmentProcessor(Processor):
             if red_flags:
                 expose['ai_red_flags'] = red_flags
 
-            logger.debug(f"Enriched property {expose.get('id')} with {len(features)} features")
+            logger.debug("Enriched property %s with %d features",
+                         expose.get('id'), len(features))
 
         except Exception as e:
-            logger.error(f"Error enriching property {expose.get('id')}: {e}")
+            logger.error("Error enriching property %s: %s", expose.get('id'), e)
 
         return expose
 
@@ -86,7 +87,7 @@ If information not mentioned, don't include it.
             return features
 
         except Exception as e:
-            logger.error(f"Error extracting features: {e}")
+            logger.error("Error extracting features: %s", e)
             return {}
 
     def _detect_red_flags(self, expose: Dict, features: Dict) -> list:

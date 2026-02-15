@@ -1,10 +1,6 @@
-import pytest
+# pylint: disable=missing-docstring
 import tempfile
-import yaml
-import json
-import requests_mock
-
-from flask import session
+import pytest
 
 from flathunter.web import app
 from flathunter.app.web_hunter import WebHunter

@@ -19,7 +19,7 @@ class SenderFile(Processor, Notifier):
 
         # Create file if it doesn't exist
         if not self.output_path.exists():
-            self.output_path.write_text('[]')
+            self.output_path.write_text('[]', encoding='utf-8')
 
     def process_expose(self, expose):
         """Save expose details to file"""
@@ -43,9 +43,9 @@ class SenderFile(Processor, Notifier):
         with open(self.output_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
-        print(f"\n{'='*60}")
-        print(f"NEW LISTING FOUND AND SAVED!")
-        print(f"{'='*60}")
+        print("\n" + "="*60)
+        print("NEW LISTING FOUND AND SAVED!")
+        print("="*60)
         print(f"Title: {expose.get('title', 'N/A')}")
         print(f"Price: {expose.get('price', 'N/A')}")
         print(f"Rooms: {expose.get('rooms', 'N/A')}")
@@ -62,17 +62,17 @@ class SenderFile(Processor, Notifier):
                 print(f"   Reasoning: {expose.get('ai_reasoning')}")
 
             if expose.get('ai_highlights'):
-                print(f"   ✅ Highlights:")
+                print("   ✅ Highlights:")
                 for highlight in expose.get('ai_highlights', []):
                     print(f"      • {highlight}")
 
             if expose.get('ai_warnings'):
-                print(f"   ⚠️  Warnings:")
+                print("   ⚠️  Warnings:")
                 for warning in expose.get('ai_warnings', []):
                     print(f"      • {warning}")
 
             if expose.get('ai_red_flags'):
-                print(f"   🚩 Red Flags:")
+                print("   🚩 Red Flags:")
                 for flag in expose.get('ai_red_flags', []):
                     print(f"      • {flag}")
 

@@ -13,7 +13,8 @@ class CrawlerFactory:
     def register(self, pattern: re.Pattern, crawler_class: Type[Crawler]):
         """Register a crawler class with URL pattern"""
         self._registry[pattern] = crawler_class
-        logger.debug(f"Registered crawler: {crawler_class.__name__} for pattern {pattern.pattern}")
+        logger.debug("Registered crawler: %s for pattern %s",
+                     crawler_class.__name__, pattern.pattern)
 
     def create_all(self, config) -> List[Crawler]:
         """Create all registered crawler instances"""

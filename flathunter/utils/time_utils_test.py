@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 import unittest
 from unittest.mock import patch
 from datetime import time
@@ -40,4 +41,3 @@ class TimeUtilsTest(unittest.TestCase):
         mock_sleep.reset_mock()
         wait_during_period(time.fromisoformat("11:00"), time.fromisoformat("11:00"))
         self.assertFalse(mock_sleep.called)
-

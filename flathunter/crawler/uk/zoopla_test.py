@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 import pytest
 
 from flathunter.crawler.uk.zoopla import Zoopla

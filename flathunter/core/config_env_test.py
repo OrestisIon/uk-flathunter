@@ -1,10 +1,9 @@
+# pylint: disable=missing-docstring
 import contextlib
-import unittest
-import tempfile
-import os.path
 import os
+import tempfile
+import unittest
 from flathunter.core.config import Config
-from flathunter.testing.config import StringConfig
 
 @contextlib.contextmanager
 def modified_environ(*remove, **update):
@@ -47,15 +46,15 @@ immoscout_cookie: abdcd
 """
 
     def setUp(self):
-         with tempfile.NamedTemporaryFile(mode='w+') as temp:
+        with tempfile.NamedTemporaryFile(mode='w+') as temp:
             temp.write(self.DUMMY_CONFIG)
             temp.flush()
             self.config = Config(temp.name)
 
     def test_loads_config_from_env(self):
-       with modified_environ(DATABASE_LOCATION="test"):
-         self.assertEqual("test", os.getenv('DATABASE_LOCATION'))
-         self.assertEqual("test", self.config.database_location())
+        with modified_environ(DATABASE_LOCATION="test"):
+            self.assertEqual("test", os.getenv('DATABASE_LOCATION'))
+            self.assertEqual("test", self.config.database_location())
 
     def test_overrides_url(self):
         self.assertEqual(["https://www.immowelt.de/"], self.config.target_urls())
@@ -65,5 +64,4 @@ immoscout_cookie: abdcd
     def test_is24_cookie(self):
         self.assertEqual("abdcd", self.config.immoscout_cookie())
         with modified_environ(IS24_COOKIE="bbbb"):
-            self.assertEqual("bbbb", self.config.immoscout_cookie()) 
-
+            self.assertEqual("bbbb", self.config.immoscout_cookie())
