@@ -1,9 +1,17 @@
 """LLM-based property scoring and analysis"""
 import asyncio
-from typing import List, Dict, Any
-from anthropic import Anthropic, AsyncAnthropic
+from typing import List, Dict, Any, TYPE_CHECKING
 from flathunter.core.abstract_processor import Processor
 from flathunter.core.logging import logger
+
+if TYPE_CHECKING:
+    from anthropic import Anthropic, AsyncAnthropic
+else:
+    try:
+        from anthropic import Anthropic, AsyncAnthropic
+    except ImportError:
+        Anthropic = None  # type: ignore
+        AsyncAnthropic = None  # type: ignore
 
 
 class PropertyScorerProcessor(Processor):
@@ -28,6 +36,11 @@ class PropertyScorerProcessor(Processor):
         api_key = config.get('llm', {}).get('api_key')
         if not api_key:
             logger.warning("No LLM API key found in config. LLM features disabled.")
+            self.enabled = False
+            return
+
+        if Anthropic is None:
+            logger.error("Anthropic SDK not installed. Run: pip install anthropic")
             self.enabled = False
             return
 
@@ -66,14 +79,16 @@ class PropertyScorerProcessor(Processor):
     def process_exposes(self, exposes):
         """Process multiple exposes concurrently for speed"""
         if not self.enabled:
-            return exposes
+            # Return map for compatibility with base class
+            return map(lambda x: x, exposes)
 
         expose_list = list(exposes)
 
         # Process in parallel for better performance
         try:
             results = asyncio.run(self._process_batch_async(expose_list))
-            return iter(results)
+            # Return as iterator but wrapped in map for type compatibility
+            return map(lambda x: x, results)
         except Exception as e:
             logger.error(f"Error in batch processing: {e}")
             # Fall back to sequential processing
