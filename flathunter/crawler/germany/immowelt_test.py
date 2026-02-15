@@ -1,4 +1,5 @@
 # pylint: disable=missing-docstring
+import os
 import pytest
 
 from flathunter.crawler.germany.immowelt import Immowelt
@@ -12,11 +13,18 @@ urls:
 
 TEST_URL = 'https://www.immowelt.de/classified-search?distributionTypes=Rent&estateTypes=House,Apartment&locations=AD08DE8634&order=Default&m=homepage_new_search_classified_search_result'
 
+# Skip live website tests in CI - they're flaky due to bot detection
+skip_in_ci = pytest.mark.skipif(
+    os.getenv('CI') == 'true',
+    reason="Flaky test: depends on live website, subject to bot detection"
+)
+
 @pytest.fixture
 def crawler():
     return Immowelt(StringConfig(string=DUMMY_CONFIG))
 
 
+@skip_in_ci
 def test_crawler(crawler):
     soup = crawler.get_page(TEST_URL)
     assert soup is not None
@@ -32,6 +40,7 @@ def test_dont_crawl_other_urls(crawler):
     exposes = crawler.crawl("https://www.example.com")
     assert count(exposes) == 0
 
+@skip_in_ci
 def test_process_expose_fetches_details(crawler):
     soup = crawler.get_page(TEST_URL)
     assert soup is not None

@@ -1,4 +1,5 @@
 # pylint: disable=missing-docstring
+import os
 import unittest
 from flathunter.crawler.italy.immobiliare import Immobiliare
 from flathunter.testing.config import StringConfig
@@ -15,6 +16,7 @@ class ImmobiliareCrawlerTest(unittest.TestCase):
     def setUp(self):
         self.crawler = Immobiliare(StringConfig(string=self.DUMMY_CONFIG))
 
+    @unittest.skipIf(os.getenv('CI') == 'true', "Flaky test: depends on live website, subject to bot detection")
     def test(self):
         soup = self.crawler.get_page(self.TEST_URL)
         self.assertIsNotNone(soup, "Should get a soup from the URL")

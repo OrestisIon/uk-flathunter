@@ -1,4 +1,5 @@
 # pylint: disable=missing-docstring
+import os
 import unittest
 import re
 from typing import Optional, Dict, List
@@ -110,6 +111,7 @@ excluded_titles:
   - "zwischenmiete"
 """
 
+    @unittest.skipIf(os.getenv('CI') == 'true', "Flaky test: depends on live Immowelt website")
     def test_hunt_flats(self):
         config = StringConfig(string=self.DUMMY_CONFIG)
         config.set_searchers([Immowelt(config)])

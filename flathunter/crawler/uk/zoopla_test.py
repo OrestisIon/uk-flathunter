@@ -1,4 +1,5 @@
 # pylint: disable=missing-docstring
+import os
 import pytest
 
 from flathunter.crawler.uk.zoopla import Zoopla
@@ -10,6 +11,12 @@ urls:
     """
 
 TEST_URL = 'https://www.zoopla.co.uk/to-rent/property/london/?beds_min=2&price_frequency=per_month&price_max=2000&q=London&results_sort=newest_listings&search_source=to-rent'
+
+# Skip live website tests in CI - they're flaky due to bot detection
+skip_in_ci = pytest.mark.skipif(
+    os.getenv('CI') == 'true',
+    reason="Flaky test: depends on live website, subject to bot detection"
+)
 
 @pytest.fixture
 def crawler():
@@ -28,11 +35,13 @@ def test_crawler_initialization(crawler):
     assert crawler is not None
     assert crawler.get_name() == 'Zoopla'
 
+@skip_in_ci
 def test_get_page(crawler):
     """Test that we can fetch a page from Zoopla"""
     soup = crawler.get_page(TEST_URL)
     assert soup is not None
 
+@skip_in_ci
 def test_extract_data(crawler):
     """Test that we can extract listing data from a Zoopla search page"""
     soup = crawler.get_page(TEST_URL)
@@ -41,6 +50,7 @@ def test_extract_data(crawler):
     assert entries is not None
     assert len(entries) > 0, "Should have at least one entry"
 
+@skip_in_ci
 def test_entry_has_required_fields(crawler):
     """Test that extracted entries have all required fields"""
     soup = crawler.get_page(TEST_URL)
@@ -73,6 +83,7 @@ def test_entry_has_required_fields(crawler):
     assert 'crawler' in entry
     assert entry['crawler'] == 'Zoopla', "Crawler should be 'Zoopla'"
 
+@skip_in_ci
 def test_entry_image_field(crawler):
     """Test that entries have image field (even if it might be None)"""
     soup = crawler.get_page(TEST_URL)
@@ -83,6 +94,7 @@ def test_entry_image_field(crawler):
     assert 'image' in entry
     # Image might be None or a URL string
 
+@skip_in_ci
 def test_multiple_entries(crawler):
     """Test that we get multiple entries from a search page"""
     soup = crawler.get_page(TEST_URL)
@@ -93,6 +105,7 @@ def test_multiple_entries(crawler):
     ids = [entry['id'] for entry in entries]
     assert len(ids) == len(set(ids)), "Entry IDs should be unique"
 
+@skip_in_ci
 def test_price_format(crawler):
     """Test that prices are in expected format"""
     soup = crawler.get_page(TEST_URL)
