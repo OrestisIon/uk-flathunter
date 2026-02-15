@@ -1,8 +1,8 @@
 # UK Flathunter 🏠🤖
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat)](https://github.com/RichardLitt/standard-readme)
-[![Lint Code Base](https://github.com/flathunters/flathunter/actions/workflows/linter.yml/badge.svg)](https://github.com/OrestisIon/uk-flathunter/actions/workflows/linter.yml)
-[![Tests](https://github.com/flathunters/flathunter/actions/workflows/tests.yml/badge.svg)](https://github.com/OrestisIon/uk-flathunter/actions/workflows/tests.yml)
+[![Lint Code Base](https://github.com/OrestisIon/uk-flathunter/actions/workflows/linter.yml/badge.svg)](https://github.com/OrestisIon/uk-flathunter/actions/workflows/linter.yml)
+[![Tests](https://github.com/OrestisIon/uk-flathunter/actions/workflows/tests.yml/badge.svg)](https://github.com/OrestisIon/uk-flathunter/actions/workflows/tests.yml)
 
 **A bot to automate your rental property search across multiple listing sites.**
 
