@@ -75,9 +75,10 @@ target/
 # celery beat schedule file
 celerybeat-schedule
 
-# dotenv
+# dotenv - ignore .env file but allow .env.example
 .env
-.env.*
+.env.local
+.env.*.local
 
 # virtualenv
 venv/
@@ -104,7 +105,6 @@ scripts/*.db
 scripts/*.json
 
 .idea/
-config.yaml
 
 # Vim
 .*.swp
@@ -114,9 +114,6 @@ config.yaml
 
 # Chromedriver / Webdriver Manager
 .wdm/
-
-# Pip requirements - should not be committed
-requirements.txt
 
 # OS files
 .DS_Store

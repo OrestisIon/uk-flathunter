@@ -4,6 +4,14 @@ from typing import List, Optional, Dict, Any
 import yaml
 import os
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv()  # Load .env file if it exists
+except ImportError:
+    # python-dotenv not installed, will just use system env vars
+    pass
+
 @dataclass
 class Settings:
     """Immutable configuration settings"""
@@ -57,6 +65,16 @@ class Settings:
 
     # Verbose logging
     verbose: bool = False
+
+    # LLM Configuration
+    llm_enabled: bool = False
+    llm_api_key: Optional[str] = None
+    llm_model: str = "claude-haiku-4.5"
+    llm_priorities: List[str] = field(default_factory=list)
+    llm_dealbreakers: List[str] = field(default_factory=list)
+
+    # ImmoScout24 Cookie
+    immoscout_cookie: Optional[str] = None
 
     # Message format
     message_format: str = """{title}
@@ -152,6 +170,17 @@ Preis: {price}
         # Verbose logging
         result['verbose'] = config.get('verbose', False)
 
+        # LLM Configuration
+        llm = config.get('llm', {})
+        result['llm_enabled'] = llm.get('enabled', False)
+        result['llm_api_key'] = llm.get('api_key')
+        result['llm_model'] = llm.get('model', 'claude-haiku-4.5')
+        result['llm_priorities'] = llm.get('priorities', [])
+        result['llm_dealbreakers'] = llm.get('dealbreakers', [])
+
+        # ImmoScout24 Cookie
+        result['immoscout_cookie'] = config.get('immoscout_cookie')
+
         # Message format
         result['message_format'] = config.get('message', result['message_format'])
         result['title_format'] = config.get('title', result['title_format'])
@@ -202,5 +231,23 @@ Preis: {price}
 
         if os.getenv('RANDOM_JITTER_ENABLED'):
             settings['random_jitter_enabled'] = os.getenv('RANDOM_JITTER_ENABLED').lower() in ('true', '1', 'yes')
+
+        # LLM Configuration
+        if os.getenv('LLM_API_KEY'):
+            settings['llm_api_key'] = os.getenv('LLM_API_KEY')
+
+        if os.getenv('LLM_MODEL'):
+            settings['llm_model'] = os.getenv('LLM_MODEL')
+
+        if os.getenv('LLM_ENABLED'):
+            settings['llm_enabled'] = os.getenv('LLM_ENABLED').lower() in ('true', '1', 'yes')
+
+        # ImmoScout24 Cookie
+        if os.getenv('IMMOSCOUT_COOKIE'):
+            settings['immoscout_cookie'] = os.getenv('IMMOSCOUT_COOKIE')
+
+        # Google Maps API Key
+        if os.getenv('GOOGLE_MAPS_API_KEY'):
+            settings['google_maps_api_key'] = os.getenv('GOOGLE_MAPS_API_KEY')
 
         return settings

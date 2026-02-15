@@ -1,0 +1,101 @@
+---
+# Flathunter Configuration
+#
+# IMPORTANT: Sensitive credentials (API keys, tokens) are stored in .env file
+# 1. Copy .env.example to .env
+# 2. Fill in your credentials in .env
+# 3. The .env file is gitignored and will not be committed
+#
+# This config.yaml file CAN be committed to version control safely
+
+# Enable verbose logging
+verbose: true
+
+# Loop settings - how often to check for new listings
+loop:
+    active: no  # Disabled for testing - set to 'yes' for continuous monitoring
+    sleeping_time: 600  # Check every 10 minutes
+    random_jitter: True
+
+# Add your search URLs here (one or more)
+# Example: https://www.immobilienscout24.de/Suche/de/berlin/berlin/wohnung-mieten?...
+urls:
+  # Rightmove - WC1 Central London, max £2500/month
+  - https://www.rightmove.co.uk/property-to-rent/find.html?searchLocation=WC1%2C+Central+London&useLocationIdentifier=true&locationIdentifier=REGION%5E91992&rent=To+rent&radius=1.0&maxPrice=2500&_includeLetAgreed=on
+  # Zoopla - WC1X area, max £2500/month
+  - https://www.zoopla.co.uk/to-rent/property/wc1x/?beds_min=0&is_retirement_home=false&is_shared_accommodation=false&is_student_accommodation=false&price_frequency=per_month&price_max=2500&q=WC1X&radius=1&search_source=to-rent
+
+# Filters to exclude unwanted listings
+filters:
+  # excluded_titles:
+  #   - "wg"
+  #   - "zwischenmiete"
+  # min_price: 700
+  # max_price: 1500
+  # min_size: 50
+  # max_size: 100
+
+# Message format for notifications
+message: |
+    {title}
+    Rooms: {rooms}
+    Size: {size}
+    Price: {price}
+    Location: {address}
+
+    {url}
+
+title: "{crawler}: {title}"
+
+# Captcha solving (needed for ImmoScout24)
+# API keys are loaded from .env file (2CAPTCHA_KEY, CAPMONSTER_KEY, IMAGETYPERZ_TOKEN)
+captcha:
+  # Uncomment the service you want to use:
+  # capmonster:
+  #   api_key:  # loaded from CAPMONSTER_KEY env var
+  # 2captcha:
+  #   api_key:  # loaded from 2CAPTCHA_KEY env var
+  # imagetyperz:
+  #   token:  # loaded from IMAGETYPERZ_TOKEN env var
+
+# Choose which notifier to use
+notifiers:
+  - file
+
+# File notifier configuration (for local testing)
+file:
+  output_file: flathunter_results.json
+
+# Telegram configuration
+# Sensitive values (bot_token, receiver_ids) are loaded from .env file
+# See .env.example for setup instructions
+telegram:
+  notify_with_images: true
+  # bot_token: loaded from TELEGRAM_BOT_TOKEN env var
+  # receiver_ids: loaded from TELEGRAM_RECEIVER_IDS env var
+
+# Optional: Google Maps API for distance calculations
+# API key is loaded from GOOGLE_MAPS_API_KEY env var
+# google_maps_api:
+#   key:  # loaded from GOOGLE_MAPS_API_KEY env var
+#   url: https://maps.googleapis.com/maps/api/distancematrix/json?origins={origin}&destinations={dest}&mode={mode}&sensor=true&key={key}&arrival_time={arrival}
+#   enable: false
+
+# Optional: ImmoScout24 cookie to help with bot detection
+# Cookie value is loaded from IMMOSCOUT_COOKIE env var
+# immoscout_cookie:
+
+# Optional: LLM Integration for AI-powered property analysis
+# See docs/LLM_INTEGRATION_GUIDE.md for detailed setup instructions
+# API key is loaded from LLM_API_KEY env var
+# llm:
+#   enabled: true
+#   api_key:  # loaded from LLM_API_KEY env var
+#   model: claude-haiku-4.5  # or claude-sonnet-4.5 for higher quality
+#   priorities:  # Your preferences (optional)
+#     - "Close to public transport"
+#     - "Quiet neighborhood"
+#     - "Natural light"
+#   dealbreakers:  # Automatic rejections (optional)
+#     - "Ground floor"
+#     - "No parking"
