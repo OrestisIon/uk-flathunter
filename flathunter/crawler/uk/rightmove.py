@@ -20,11 +20,16 @@ class Rightmove(Crawler):
         """Extracts all property listings from a provided Soup object"""
         entries = []
 
-        # Rightmove uses class "propertyCard" for individual listings
-        findings = soup.find_all('div', class_=re.compile(r'propertyCard', re.I))
+        # Rightmove uses class "PropertyCard_propertyCardContainerWrapper" for top-level cards
+        # This is more specific and avoids matching nested elements
+        findings = soup.find_all('div', class_=re.compile(r'PropertyCard_propertyCardContainerWrapper'))
 
         if not findings:
-            # Fallback: try to find listings by common patterns
+            # Fallback: try old pattern for backward compatibility
+            findings = soup.find_all('div', class_=re.compile(r'propertyCard', re.I))
+
+        if not findings:
+            # Second fallback: try to find listings by common patterns
             findings = soup.find_all('div', attrs={'id': re.compile(r'property-\d+', re.I)})
 
         logger.debug('Found %d potential property cards', len(findings))
@@ -203,6 +208,13 @@ class Rightmove(Crawler):
 
     def _extract_rooms(self, card: Tag) -> str:
         """Extract number of bedrooms"""
+        # Try to find the bedroom count span (Rightmove's specific class)
+        bedroom_span = card.find('span', class_=re.compile(r'bedroomsCount', re.I))
+        if isinstance(bedroom_span, Tag):
+            bedroom_text = bedroom_span.get_text(strip=True)
+            if bedroom_text.isdigit():
+                return bedroom_text
+
         # Try propertyCard-details or similar
         details_elem = card.find(class_=re.compile(r'propertyCard.*details', re.I))
         if isinstance(details_elem, Tag):

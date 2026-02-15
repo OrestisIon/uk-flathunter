@@ -52,12 +52,12 @@ class Zoopla(WebdriverCrawler):
                     # Handle @graph format
                     for item in data['@graph']:
                         if item.get('@type') == 'SearchResultsPage' and 'mainEntity' in item:
-                            entries = self._parse_item_list(item['mainEntity'])
+                            entries = self._parse_item_list(item['mainEntity'], soup)
                             break
                 elif isinstance(data, dict) and data.get('@type') == 'SearchResultsPage':
                     # Handle direct SearchResultsPage format
                     if 'mainEntity' in data:
-                        entries = self._parse_item_list(data['mainEntity'])
+                        entries = self._parse_item_list(data['mainEntity'], soup)
                         break
 
                 if entries:
@@ -70,7 +70,7 @@ class Zoopla(WebdriverCrawler):
         logger.debug('Number of valid entries found from JSON-LD: %d', len(entries))
         return entries
 
-    def _parse_item_list(self, item_list: Dict) -> List[Dict]:
+    def _parse_item_list(self, item_list: Dict, soup: BeautifulSoup) -> List[Dict]:
         """Parse the ItemList from JSON-LD structured data"""
         entries = []
 
@@ -80,7 +80,10 @@ class Zoopla(WebdriverCrawler):
         items = item_list.get('itemListElement', [])
         logger.debug("Found %d items in JSON-LD ItemList", len(items))
 
-        for list_item in items:
+        # Extract addresses from HTML (they are in the same order as JSON-LD items)
+        addresses = soup.find_all('address')
+
+        for idx, list_item in enumerate(items):
             if not isinstance(list_item, dict):
                 continue
 
@@ -111,6 +114,11 @@ class Zoopla(WebdriverCrawler):
             # Extract number of bedrooms from name
             rooms = self._extract_rooms_from_name(name)
 
+            # Get address from HTML if available (addresses are in same order as JSON-LD items)
+            address = ""
+            if idx < len(addresses):
+                address = addresses[idx].get_text(strip=True)
+
             if url and name and price:
                 details = {
                     'id': property_id if property_id else url,
@@ -119,7 +127,7 @@ class Zoopla(WebdriverCrawler):
                     'price': price_formatted,
                     'size': "",  # Not provided in JSON-LD
                     'rooms': rooms,
-                    'address': "",  # Will be extracted from description or detail page
+                    'address': address,
                     'image': image,
                     'crawler': self.get_name()
                 }

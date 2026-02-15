@@ -22,7 +22,14 @@ class Immobiliare(Crawler):
         results = raw_data.find(
             'ul', {"data-cy": "search-layout-list"})
 
-        items = results.select("div.in-listingCard")
+        if results is None:
+            logger.warning("Could not find search-layout-list")
+            return entries
+
+        # Updated: class names have changed from in-listingCard to styles_in-listingCardProperty__*
+        items = results.find_all('div', class_=lambda x: x and any('in-listingCardProperty' in c for c in x) if x else False)
+
+        logger.debug('Found %d listing items', len(items))
 
         for row in items:
             title_row = row.find('a', {"class": "in-listingCardTitle"})

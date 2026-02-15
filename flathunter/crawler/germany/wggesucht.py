@@ -40,6 +40,16 @@ def extract_href_style(row: Tag) -> Optional[str]:
 
 def get_image_url(row: Tag) -> Optional[str]:
     """Parse the image url from the expose"""
+    # Try new structure: img tag with src attribute
+    div = row.find('div', {"class": "card_image"})
+    if isinstance(div, Tag):
+        img = div.find('img')
+        if isinstance(img, Tag):
+            src = img.get('src')
+            if src and isinstance(src, str):
+                return src
+
+    # Try old structure: background-image in style attribute
     href_style = extract_href_style(row)
     if href_style is None:
         return None
@@ -95,7 +105,10 @@ def is_verified_company(row: Tag) -> bool:
 # pylint: disable=too-many-return-statements
 def parse_expose_element_to_details(row: Tag, crawler: str) -> Optional[Dict]:
     """Parse an Expose soup element to an Expose details dictionary"""
+    # Try h2 first (old structure), then h3 (new structure)
     title_row = row.find('h2', {"class": "truncate_title"})
+    if title_row is None or not isinstance(title_row, Tag):
+        title_row = row.find('h3', {"class": "truncate_title"})
     if title_row is None or not isinstance(title_row, Tag):
         logger.warning("No title found - skipping")
         return None

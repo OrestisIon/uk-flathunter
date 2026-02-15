@@ -56,7 +56,8 @@ class Kleinanzeigen(WebdriverCrawler):
             try:
                 price = expose.find(
                     class_="aditem-main--middle--price-shipping--price").text.strip()
-                tags = expose.find_all(class_="simpletag")
+                # Updated: use "aditem-main--middle--tags" instead of "simpletag"
+                tags_elem = expose.find(class_="aditem-main--middle--tags")
                 address = expose.find("div", {"class": "aditem-main--top--left"})
                 image_element = expose.find("div", {"class": "galleryimage-element"})
             except AttributeError as error:
@@ -72,16 +73,21 @@ class Kleinanzeigen(WebdriverCrawler):
             address = address.replace('\n', ' ').replace('\r', '')
             address = " ".join(address.split())
 
+            # Extract size and rooms from tags element
+            size = ""
             rooms = ""
-            if len(tags) > 1:
-                rooms_match = re.search(r'\d+[.|,]*\d*', tags[1].text, flags=re.MULTILINE)
-                if rooms_match is not None:
-                    rooms = rooms_match.group()
+            if tags_elem is not None:
+                tags_text = tags_elem.get_text()
 
-            try:
-                size = tags[0].text.strip()
-            except (IndexError, TypeError):
-                size = ""
+                # Extract size (e.g., "83,32 m²" or "83.5 m²")
+                size_match = re.search(r'(\d+[,.]?\d*)\s*m²', tags_text)
+                if size_match:
+                    size = size_match.group(0)
+
+                # Extract rooms (e.g., "2 Zi." or "2 Zimmer")
+                rooms_match = re.search(r'(\d+[,.]?\d*)\s*Zi', tags_text, re.I)
+                if rooms_match:
+                    rooms = rooms_match.group(1)
 
             details = {
                 'id': int(expose.get("data-adid")),
