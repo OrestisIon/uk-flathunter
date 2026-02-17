@@ -238,8 +238,24 @@ Location: {address}
         return os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + "/..")
 
     def target_urls(self) -> List[str]:
-        """List of target URLs for crawling"""
+        """List of target URLs for crawling.
+
+        If a 'searches:' block is present, URLs are built from structured search configs.
+        Falls back to the legacy 'urls:' list for backward compatibility.
+        """
+        searches = self.config.get('searches', [])
+        if searches:
+            from flathunter.crawler.url_builders import build_urls_from_searches  # pylint: disable=import-outside-toplevel
+            return build_urls_from_searches(searches)
         return self._read_yaml_path('urls', [])
+
+    def exclude_area_names(self) -> List[str]:
+        """List of area name substrings to exclude from results"""
+        return self._read_yaml_path('exclude_areas.names', [])
+
+    def exclude_area_postcodes(self) -> List[str]:
+        """List of postcodes to exclude from results"""
+        return self._read_yaml_path('exclude_areas.postcodes', [])
 
     def verbose_logging(self):
         """Return true if logging should be verbose"""

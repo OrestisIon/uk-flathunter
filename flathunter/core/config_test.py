@@ -54,7 +54,9 @@ filters:
             config_file.close()
             created = True
         config = Config("config.yaml")
-        self.assertTrue(len(config.get('urls') or []) > 0, "Expected URLs in config file")
+        has_urls = len(config.get('urls') or []) > 0
+        has_searches = len(config.get('searches') or []) > 0
+        self.assertTrue(has_urls or has_searches, "Expected 'urls' or 'searches' in config file")
         if created:
             os.remove("config.yaml")
 

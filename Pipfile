@@ -39,6 +39,7 @@ jinja2 = "*"
 cryptography = "*"
 pydantic = "*"
 exceptiongroup = "*"
+anthropic = "*"
 
 [dev-packages]
 exceptiongroup = "*"

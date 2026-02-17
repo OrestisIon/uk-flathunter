@@ -17,13 +17,37 @@ loop:
     sleeping_time: 600  # Check every 10 minutes
     random_jitter: True
 
-# Add your search URLs here (one or more)
-# Example: https://www.immobilienscout24.de/Suche/de/berlin/berlin/wohnung-mieten?...
-urls:
-  # Rightmove - WC1 Central London, max £2500/month
-  - https://www.rightmove.co.uk/property-to-rent/find.html?searchLocation=WC1%2C+Central+London&useLocationIdentifier=true&locationIdentifier=REGION%5E91992&rent=To+rent&radius=1.0&maxPrice=2500&_includeLetAgreed=on
-  # Zoopla - WC1X area, max £2500/month
-  - https://www.zoopla.co.uk/to-rent/property/wc1x/?beds_min=0&is_retirement_home=false&is_shared_accommodation=false&is_student_accommodation=false&price_frequency=per_month&price_max=2500&q=WC1X&radius=1&search_source=to-rent
+# Structured search configuration - URLs are built automatically per site and area.
+# Remove this block and use 'urls:' instead for manual URL control (backward compatible).
+searches:
+  - name: "Central London Rentals"
+    sites:
+      - rightmove
+      - zoopla
+    type: rent
+    areas:
+      - "Fitzrovia"
+      - "Marylebone"
+    filters:
+      price_min: 1500
+      price_max: 2500
+      bedrooms_min: 1
+      bedrooms_max: 2
+      radius: 0.5
+      added_since: last_24_hours
+      exclude_shared: true
+      exclude_retirement: true
+      exclude_student: true
+
+# Post-scraping area exclusion filter (applied after crawling, before notifications)
+exclude_areas:
+  names:
+    - "Elephant and Castle"
+    - "Peckham"
+    - "Caledonian Road"
+  postcodes:
+    - "SE1"
+    - "SW8"
 
 # Filters to exclude unwanted listings
 filters:

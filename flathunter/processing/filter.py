@@ -172,6 +172,29 @@ class PPSFilter(AbstractFilter):
         return pps <= self.max_pps
 
 
+class ExcludeAreasFilter(AbstractFilter):
+    """Exclude exposes whose address matches forbidden area names or postcodes"""
+
+    def __init__(self, exclude_names: List[str], exclude_postcodes: List[str]):
+        self.exclude_names = [n.lower() for n in exclude_names]
+        self.exclude_postcodes = [p.upper() for p in exclude_postcodes]
+
+    def is_interesting(self, expose) -> bool:
+        """Return False (exclude) if address contains a forbidden name or postcode"""
+        address = expose.get("address", "") or ""
+        address_lower = address.lower()
+        address_upper = address.upper()
+
+        if any(name in address_lower for name in self.exclude_names):
+            return False
+
+        for postcode in self.exclude_postcodes:
+            if re.search(r'\b' + re.escape(postcode) + r'\b', address_upper):
+                return False
+
+        return True
+
+
 class FilterBuilder:
     """Construct a filter chain"""
     filters: List[AbstractFilter]
@@ -196,6 +219,10 @@ class FilterBuilder:
         self._append_filter_if_not_empty(MaxRoomsFilter, config.max_rooms())
         self._append_filter_if_not_empty(
             PPSFilter, config.max_price_per_square())
+        names = config.exclude_area_names() if hasattr(config, 'exclude_area_names') else []
+        postcodes = config.exclude_area_postcodes() if hasattr(config, 'exclude_area_postcodes') else []
+        if names or postcodes:
+            self.filters.append(ExcludeAreasFilter(names, postcodes))
         return self
 
     def filter_already_seen(self, id_watch):
