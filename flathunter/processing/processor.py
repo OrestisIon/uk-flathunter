@@ -10,6 +10,7 @@ from flathunter.notifiers import SenderMattermost, SenderTelegram, SenderApprise
 from flathunter.processing.gmaps_duration_processor import GMapsDurationProcessor
 from flathunter.persistence.idmaintainer import SaveAllExposesProcessor
 from flathunter.core.abstract_processor import Processor
+from flathunter.llm.property_scorer import PropertyScorerProcessor
 
 class ProcessorChainBuilder:
     """Builder pattern for building chains of processors"""
@@ -78,6 +79,13 @@ class ProcessorChainBuilder:
     def save_all_exposes(self, id_watch):
         """Add processor that saves all exposes to disk"""
         self.processors.append(SaveAllExposesProcessor(self.config, id_watch))
+        return self
+
+    def score_properties(self):
+        """Add LLM-based property scoring processor, if enabled"""
+        llm_enabled = "llm" in self.config and self.config["llm"].get("enabled", False)
+        if llm_enabled:
+            self.processors.append(PropertyScorerProcessor(self.config))
         return self
 
     def build(self):

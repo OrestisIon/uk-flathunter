@@ -125,11 +125,12 @@ class YamlConfig:  # pylint: disable=too-many-public-methods
     """Generic config object constructed from nested dictionaries"""
 
     DEFAULT_MESSAGE_FORMAT = """{title}
-Zimmer: {rooms}
-Größe: {size}
-Preis: {price}
+Rooms: {rooms}
+Size: {size}
+Price: {price}
+Location: {address}
 
-{url}"""
+{url}{ai_analysis}"""
 
     def __init__(self, config=None):
         if config is None:

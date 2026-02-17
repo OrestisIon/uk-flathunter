@@ -43,7 +43,7 @@ message: |
     Price: {price}
     Location: {address}
 
-    {url}
+    {url}{ai_analysis}
 
 title: "{crawler}: {title}"
 
@@ -60,6 +60,7 @@ captcha:
 
 # Choose which notifier to use
 notifiers:
+  - telegram
   - file
 
 # File notifier configuration (for local testing)
@@ -88,14 +89,14 @@ telegram:
 # Optional: LLM Integration for AI-powered property analysis
 # See docs/LLM_INTEGRATION_GUIDE.md for detailed setup instructions
 # API key is loaded from LLM_API_KEY env var
-# llm:
-#   enabled: true
-#   api_key:  # loaded from LLM_API_KEY env var
-#   model: claude-haiku-4.5  # or claude-sonnet-4.5 for higher quality
-#   priorities:  # Your preferences (optional)
-#     - "Close to public transport"
-#     - "Quiet neighborhood"
-#     - "Natural light"
-#   dealbreakers:  # Automatic rejections (optional)
+llm:
+  enabled: true
+  api_key:  # loaded from LLM_API_KEY env var
+  model: claude-sonnet-4-5-20250929  # Higher quality analysis
+  priorities:  # Your preferences (optional)
+    - "Close to public transport"
+    - "Quiet neighborhood"
+    - "Natural light"
+  dealbreakers:  # Automatic rejections (optional)
 #     - "Ground floor"
 #     - "No parking"

@@ -88,6 +88,16 @@ class SenderTelegram(Processor, Notifier):
 
         # handle error
         if response.status_code != 200:
+            if response.status_code == 429:
+                data = response.json()
+                if "Too Many Requests" in data.get("description", ""):
+                    backoff = data.get("parameters", {}).get("retry_after", 30)
+                    logger.warning("Telegram rate limit hit, retrying after %d seconds", backoff)
+                    time.sleep(min(backoff, 30))
+                    # Retry once after backoff
+                    response = requests.request("POST", self.__text_message_url, data=payload, timeout=30)
+                    if response.status_code == 200:
+                        return response.json().get('result', {})
             self.__handle_error("When sending bot text message, we got an error.",
                 response, chat_id)
             return {}
@@ -149,11 +159,6 @@ class SenderTelegram(Processor, Notifier):
                 raise BotBlockedException(f"User {chat_id} blocked the bot")
             if "user is deactivated" in data.get("description", ""):
                 raise UserDeactivatedException(f"User {chat_id} has been deactivated")
-        if response.status_code == 429:
-            if "Too Many Requests" in data.get("description", ""):
-                backoff = data.get("parameters", {}).get("retry_after", 30)
-                time.sleep(min(backoff, 30))
-                return None
         return None
 
     def __get_images(self, expose: Dict) -> List[str]:
@@ -166,6 +171,22 @@ class SenderTelegram(Processor, Notifier):
         :return: str
         """
 
+        # Build AI analysis section if available
+        ai_section = ""
+        if expose.get('ai_score'):
+            score = expose.get('ai_score', 'N/A')
+            reasoning = expose.get('ai_reasoning', '')
+            highlights = expose.get('ai_highlights', [])
+            warnings = expose.get('ai_warnings', [])
+
+            ai_section = f"\n\n🤖 AI Analysis: {score}/10"
+            if reasoning:
+                ai_section += f"\n{reasoning}"
+            if highlights:
+                ai_section += f"\n\n✅ Highlights:\n" + "\n".join(f"• {h}" for h in highlights)
+            if warnings:
+                ai_section += f"\n\n⚠️ Warnings:\n" + "\n".join(f"• {w}" for w in warnings)
+
         return self.config.message_format().format(
             crawler=expose.get('crawler', 'N/A'),
             title=expose.get('title', 'N/A'),
@@ -174,5 +195,6 @@ class SenderTelegram(Processor, Notifier):
             price=expose.get('price', 'N/A'),
             url=expose.get('url', 'N/A'),
             address=expose.get('address', 'N/A'),
-            durations=expose.get('durations', 'N/A')
+            durations=expose.get('durations', 'N/A'),
+            ai_analysis=ai_section
         ).strip()

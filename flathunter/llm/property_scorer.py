@@ -1,5 +1,6 @@
 """LLM-based property scoring and analysis"""
 import asyncio
+import os
 from typing import List, Dict, Any, TYPE_CHECKING
 from flathunter.core.abstract_processor import Processor
 from flathunter.core.logging import logger
@@ -33,9 +34,10 @@ class PropertyScorerProcessor(Processor):
             logger.info("LLM scoring is disabled in config")
             return
 
-        api_key = config.get('llm', {}).get('api_key')
+        # Try to get API key from config, fallback to environment variable
+        api_key = config.get('llm', {}).get('api_key') or os.getenv('LLM_API_KEY')
         if not api_key:
-            logger.warning("No LLM API key found in config. LLM features disabled.")
+            logger.warning("No LLM API key found in config or LLM_API_KEY env var. LLM features disabled.")
             self.enabled = False
             return
 
