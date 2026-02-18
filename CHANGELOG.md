@@ -5,6 +5,30 @@ All notable changes to UK Flathunter will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-02-18
+
+### ✨ Added
+
+#### Structured Search Configuration
+- **`searches:` config block**: Replace hand-crafted URLs with a human-readable config specifying sites, areas, filters and transport zones — URLs are built automatically
+- **Rightmove URL builder**: Resolves area names to `locationIdentifier` via the Rightmove typeahead API, with a local 7-day verified cache (`data/rightmove_locations.json`)
+- **Zoopla URL builder**: Generates Zoopla search URLs from the same filter config
+- **TfL zone expansion**: Use `zones: [1, 2]` to automatically search all London postcode districts in those zones (45 areas for zones 1–2)
+- **`ExcludeAreasFilter`**: Post-scraping filter to exclude listings by area name (substring match) or postcode (word-boundary match), configured via `exclude_areas:` in config.yaml
+
+#### Backward Compatibility
+- `target_urls()` falls back to the original `urls:` list if `searches:` is not present — existing configs require no changes
+
+### 🔧 Dependencies
+
+- Added `anthropic` SDK as a direct dependency (previously needed only for optional LLM features)
+
+### 🐛 Fixed
+
+- **`KeyError: 'website'`** in `main.py` when the `website:` key is absent from config.yaml
+
+---
+
 ## [1.0.0] - 2026-02-15
 
 ### 🎉 Initial Release
@@ -168,4 +192,5 @@ Enhanced with:
 
 ---
 
+[1.1.0]: https://github.com/OrestisIon/uk-flathunter/releases/tag/v1.1.0
 [1.0.0]: https://github.com/OrestisIon/uk-flathunter/releases/tag/v1.0.0
