@@ -41,11 +41,7 @@ Check the log file in `~/.flathunter/logs/` to ensure it ran successfully.
 
 ### 3. Install the launchd job
 
-First, edit `scripts/com.flathunter.daily.plist` and replace the two placeholders with your actual paths:
-- `/YOUR/PROJECT/PATH` → the directory where you cloned this repo (e.g. `/Users/you/flathunter`)
-- `YOUR_USERNAME` → your macOS username
-
-Then copy it to your LaunchAgents directory:
+Copy the plist file to your LaunchAgents directory:
 
 ```bash
 cp scripts/com.flathunter.daily.plist ~/Library/LaunchAgents/
@@ -199,7 +195,7 @@ If you prefer cron instead of launchd:
 crontab -e
 
 # Add this line to run at 7pm daily:
-0 19 * * * /Users/path/to/file/run_flathunter.sh
+0 19 * * * /YOUR/PROJECT/PATH/flathunter/scripts/run_flathunter.sh
 ```
 
 Note: On macOS, launchd is preferred over cron as it's more reliable and better integrated with the system.
