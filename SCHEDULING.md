@@ -16,7 +16,7 @@ This guide explains how to set up Flathunter to run automatically every night at
 
 2. **Python environment**: Ensure all dependencies are installed
    ```bash
-   pip install -r requirements.txt
+   pipenv install
    ```
 
 3. **Configuration**: Verify your `config.yaml` and `.env` are properly configured
@@ -26,7 +26,7 @@ This guide explains how to set up Flathunter to run automatically every night at
 ### 1. Make the run script executable
 
 ```bash
-chmod +x run_flathunter.sh
+chmod +x scripts/run_flathunter.sh
 ```
 
 ### 2. Test the run script manually
@@ -34,7 +34,7 @@ chmod +x run_flathunter.sh
 Before scheduling, verify the script works:
 
 ```bash
-./run_flathunter.sh
+./scripts/run_flathunter.sh
 ```
 
 Check the log file in `~/.flathunter/logs/` to ensure it ran successfully.
@@ -44,7 +44,7 @@ Check the log file in `~/.flathunter/logs/` to ensure it ran successfully.
 Copy the plist file to your LaunchAgents directory:
 
 ```bash
-cp com.flathunter.daily.plist ~/Library/LaunchAgents/
+cp scripts/com.flathunter.daily.plist ~/Library/LaunchAgents/
 ```
 
 ### 4. Load the scheduled job
@@ -164,7 +164,7 @@ To run multiple times, create multiple `StartCalendarInterval` entries:
 
 Ensure the script is executable:
 ```bash
-chmod +x /Users/orestisiona/Documents/projects/flathunter/run_flathunter.sh
+chmod +x scripts/run_flathunter.sh
 ```
 
 ### Environment variables not loading
@@ -195,7 +195,7 @@ If you prefer cron instead of launchd:
 crontab -e
 
 # Add this line to run at 7pm daily:
-0 19 * * * /Users/orestisiona/Documents/projects/flathunter/run_flathunter.sh
+0 19 * * * /Users/path/to/file/run_flathunter.sh
 ```
 
 Note: On macOS, launchd is preferred over cron as it's more reliable and better integrated with the system.

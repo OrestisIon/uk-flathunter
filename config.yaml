@@ -29,9 +29,9 @@ searches:
       - "Fitzrovia"
       - "Marylebone"
     filters:
-      price_min: 1500
+      price_min: 1100
       price_max: 2500
-      bedrooms_min: 1
+      # bedrooms_min:
       bedrooms_max: 2
       radius: 0.5
       added_since: last_24_hours
