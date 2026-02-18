@@ -41,7 +41,11 @@ Check the log file in `~/.flathunter/logs/` to ensure it ran successfully.
 
 ### 3. Install the launchd job
 
-Copy the plist file to your LaunchAgents directory:
+First, edit `scripts/com.flathunter.daily.plist` and replace the two placeholders with your actual paths:
+- `/YOUR/PROJECT/PATH` → the directory where you cloned this repo (e.g. `/Users/you/flathunter`)
+- `YOUR_USERNAME` → your macOS username
+
+Then copy it to your LaunchAgents directory:
 
 ```bash
 cp scripts/com.flathunter.daily.plist ~/Library/LaunchAgents/

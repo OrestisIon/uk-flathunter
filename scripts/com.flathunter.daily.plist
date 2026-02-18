@@ -8,7 +8,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/orestisiona/Documents/projects/flathunter/run_flathunter.sh</string>
+        <string>/YOUR/PROJECT/PATH/scripts/run_flathunter.sh</string>
     </array>
 
     <key>StartCalendarInterval</key>
@@ -20,13 +20,13 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>/Users/orestisiona/.flathunter/logs/launchd.out.log</string>
+    <string>/Users/YOUR_USERNAME/.flathunter/logs/launchd.out.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/orestisiona/.flathunter/logs/launchd.err.log</string>
+    <string>/Users/YOUR_USERNAME/.flathunter/logs/launchd.err.log</string>
 
     <key>WorkingDirectory</key>
-    <string>/Users/orestisiona/Documents/projects/flathunter</string>
+    <string>/YOUR/PROJECT/PATH</string>
 
     <key>RunAtLoad</key>
     <false/>
