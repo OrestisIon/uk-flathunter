@@ -16,11 +16,6 @@ This directory contains development scripts, debugging tools, and utilities.
 - **debug_zoopla.py** - Debugging script for Zoopla crawler
 - **zoopla_debug.html** - HTML output from Zoopla debugging (if present)
 
-### Build Tools
-- **pleasew** - Please build tool wrapper
-- **.plzconfig** - Please build tool configuration
-- **plugins/** - Please build tool plugins
-
 ## Usage
 
 ### Run Configuration Wizard

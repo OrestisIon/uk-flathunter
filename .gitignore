@@ -117,3 +117,5 @@ scripts/*.json
 
 # OS files
 .DS_Store
+
+flathunter_results.json

@@ -16,9 +16,9 @@ from flathunter.utils.heartbeat import Heartbeat
 from flathunter.utils.time_utils import get_random_time_jitter, wait_during_period
 
 __author__ = "Orestis Iona"
-__version__ = "1.0"
+__version__ = "1.1"
 __maintainer__ = "orestis"
-__email__ = "orestis@gmail.com"
+__email__ = "orestisj@gmail.com"
 __status__ = "Production"
 
 
